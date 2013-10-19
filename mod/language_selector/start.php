@@ -54,10 +54,11 @@ function language_selector_pagesetup() {
 
 function language_selector_get_allowed_translations() {
 
+	$allowed = array();
 	$configured_allowed = elgg_get_plugin_setting("allowed_languages", "language_selector");
 
 	if (empty($configured_allowed)) {
-		$allowed = "en";
+		$allowed = array("en");
 
 		$installed_languages = get_installed_translations();
 

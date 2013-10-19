@@ -120,10 +120,16 @@ function projects_init() {
 function projects_fields_setup() {
 
 	$profile_defaults = array(
-		'description' => 'longtext',
 		'briefdescription' => 'text',
+		'description' => 'longtext',
 		'interests' => 'tags',
-		//'website' => 'url',
+		'startdate' => 'date',
+		'mail' => 'text',
+		'website' => 'text',
+		'geolocation' => 'text',
+		'paymethodBAN' => 'text',
+		'paymethodCES' => 'text'
+		
 	);
 
 	$profile_defaults = elgg_trigger_plugin_hook('profile:fields', 'project', NULL, $profile_defaults);

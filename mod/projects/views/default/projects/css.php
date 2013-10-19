@@ -14,7 +14,7 @@
 	background: #eeeeee;
 	padding: 5px;
 	margin-top: 10px;
-	
+
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
@@ -58,19 +58,22 @@
 }
 
 .projects-gallery-info {
-	padding: 10px;	
+	padding: 10px;
 }
 
 .projects-gallery-item {
 	text-align: center;
 	padding: 10px 4px;
-	margin-bottom: 7px;	
+	margin-bottom: 7px;
 }
 
 .projects-gallery-photo img {
 	width: 100%
 }
 
+.projects-gallery-subtitle {
+	text-align: justify;
+}
 .projects-gallery-item:hover img {
 	-webkit-filter: hue-rotate(90deg);
 }

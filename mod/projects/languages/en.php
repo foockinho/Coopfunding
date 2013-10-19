@@ -31,6 +31,13 @@ $language = array(
 	'projects:members' => 'Project members',
 	'projects:subscribed' => 'Project notifications on',
 	'projects:unsubscribed' => 'Project notifications off',
+	
+	'projects:startdate' => 'Start date',
+	'projects:mail' => 'Mail',
+	'projects:geolocation' => 'Geolocation',
+	
+	'projects:paymethodBAN' => 'Bank account number',
+	'projects:paymethodCES' => 'Integral CES code',
 
 	'projects:members:title' => 'Members of %s',
 	'projects:members:more' => "View all members",

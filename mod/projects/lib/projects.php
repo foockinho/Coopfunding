@@ -10,6 +10,11 @@
  * Get project entity from its alias
  */
 function projects_get_from_alias($alias) {
+
+	if (!$alias) {
+		return false;
+	}
+
 	$entities = elgg_get_entities_from_metadata(array(
 		'type' => 'group',
 		'subtype' => 'project',
@@ -276,6 +281,7 @@ function projects_handle_profile_page($guid) {
 	$content = elgg_view('projects/profile/layout', array('entity' => $project));
 	$sidebar = '';
 
+	$sidebar .= elgg_view('projects/sidebar/contribute', array('entity' => $project));
 	if (elgg_is_active_plugin('search')) {
 		$sidebar .= elgg_view('projects/sidebar/search', array('entity' => $project));
 	}

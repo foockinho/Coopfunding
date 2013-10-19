@@ -11,7 +11,7 @@ elgg_register_event_handler('init','system','coopfunding_theme_init');
 function coopfunding_theme_init() {
 
 	elgg_register_event_handler('pagesetup', 'system', function() {
-
+        elgg_unregister_menu_item('site', 'activity');
 		elgg_unregister_menu_item('footer', 'elgg');
 		elgg_unregister_menu_item('topbar', 'elgg_logo');
 		if (elgg_is_active_plugin('externalpages')) {
