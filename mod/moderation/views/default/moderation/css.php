@@ -1,0 +1,3 @@
+.moderation-edited {
+	color: red;
+}

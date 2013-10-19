@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin_manifest xmlns="http://www.elgg.org/plugin_manifest/1.8">
+	<name>Fundraising Paypal</name>
+	<id>fundraising-paypal</id>
+	<author>Coopfunding Developers</author>
+	<version>0.2</version>
+	<category>coopfunding-bundled</category>
+	<category>fundraising</category>
+	<description>Fundraising with Paypal</description>
+	<website>https://coopfunding.net</website>
+	<copyright>See COPYRIGHT.txt</copyright>
+	<license>GNU Affero General Public License version 3+</license>
+	<requires>
+		<type>elgg_release</type>
+		<version>1.8</version>
+	</requires>
+	<requires>
+		<type>plugin</type>
+		<plugin>fundraising</plugin>
+	</requires>
+	<activate_on_install>true</activate_on_install>
+</plugin_manifest>
