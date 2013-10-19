@@ -20,6 +20,8 @@ function fundraising_bankaccount_init() {
 
     fundraising_register_method('bankaccount');
     fundraising_register_currency('eur');
+
+	
 }
 
 function fundraising_bankaccount_page_handler($page) {
@@ -93,7 +95,8 @@ function fundraising_bankaccount_contribute_page ($entity) {
 		'content' => $content,
 		'filter' => '',
 	));
-	echo elgg_view_page($title, $body);
+	echo elgg_view_page($title, $body);	
+
 	return true;
 }
 
@@ -108,7 +111,7 @@ function fundraising_bankaccount_managedeposits_page ($entity) {
 	fundraising_bankaccount_managedeposits_set_add_button_func($entity->guid);
 	
 	if (isset($params['sidebar'])) {
-		$params['sidebar'] .= elgg_view('undraising-bankaccount/sidebar', array('page' => $page_type));
+		$params['sidebar'] .= elgg_view('fundraising-bankaccount/sidebar', array('page' => $page_type));
 	}
 
 	$body = elgg_view_layout('content', $params);
@@ -149,6 +152,5 @@ function fundraising_bankaccount_set_side_bar_menu ($hook, $entity_type, $return
 	return $return_value;    
     
 }
-
 
 

@@ -6,6 +6,7 @@ if ($token && isset($_SESSION['paypal_contrib'][$token])) { // Token parameter e
 
 	$guid = $_SESSION['paypal_contrib'][$token]['project_guid'];
 	$amount = $_SESSION['paypal_contrib'][$token]['amount'];
+	$reward_guid = $_SESSION['paypal_contrib'][$token]['reward_guid'];	
 
 	$entity = get_entity($guid);
 
@@ -56,6 +57,11 @@ if ($token && isset($_SESSION['paypal_contrib'][$token])) { // Token parameter e
 	$entity->eur_amount += $amount;
 
 	system_message(elgg_echo('fundraising:contribute:success'));
+
+	if ($reward_guid) {
+		$params = array('guid' => $guid, 'amount' => $amount, 'reward_guid' => $reward_guid);
+		elgg_trigger_plugin_hook('fundraising_payment',  'paid',  $params);	
+	}
 	forward($entity->getURL());
 }
 

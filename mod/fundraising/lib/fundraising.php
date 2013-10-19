@@ -7,7 +7,7 @@ function fundraising_get_methods() {
 function fundraising_get_contribute_button($fundcampaign_guid, $amount = 0, $reward_guid) {
     
     $output = "<span><ul>";
-    $link = "<li><a class='elgg-button elgg-button-action' href='" . elgg_get_site_url() ."fundraising/contribute/{$fundcampaign_guid}?amount={$amount}&reward={$reward_guid}'>" . elgg_echo('fundraising:contribute:with', array($amount)) . "</a>";
+    $link = "<li><a class='elgg-button elgg-button-action' href='" . elgg_get_site_url() ."fundraising/contribute/{$fundcampaign_guid}?amount={$amount}&reward_guid={$reward_guid}'>" . elgg_echo('fundraising:contribute:with', array($amount)) . "</a>";
     $output .= $link;
     
 	$output .= "</ul><span>";

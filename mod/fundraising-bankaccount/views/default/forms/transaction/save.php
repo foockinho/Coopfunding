@@ -5,9 +5,10 @@
  * @package transaction
  */
 
-
+ 
 $transaction = get_entity($vars['guid']);
 $vars['entity'] = $transaction;
+
 $amount = $vars['eur_amount'];
 
 $action_buttons = '';
@@ -48,7 +49,6 @@ if (!$vars['commit_date']) {
 } else {
  
 }
-
 $date_label = elgg_echo('fundraising:date');
 $date_input = elgg_view('input/date', array(
 	'name' => 'commit_date',
@@ -63,6 +63,13 @@ $amount_input = elgg_view('input/text', array(
 	'value' => _elgg_html_decode($vars['eur_amount'])
 ));
 
+if (elgg_is_active_plugin("campaign_reward")) {		
+	
+		$params = array('fundcampaign_guid' => $vars['container_guid'], 'transaction_guid' => $vars['guid']);		
+		$campaign_reward_text = elgg_trigger_plugin_hook('fundraising:rewards:selector', 'campaign_reward', $params);	
+}
+
+
 if ($vars['guid']) {
 	$entity = get_entity($vars['guid']);
 	$saved = date('F j, Y @ H:i', $entity->time_created);
@@ -73,12 +80,12 @@ if ($vars['guid']) {
 // hidden inputs
 $container_guid_input = elgg_view('input/hidden', array('name' => 'container_guid', 'value' => $vars['container_guid']));
 $guid_input = elgg_view('input/hidden', array('name' => 'guid', 'value' => $vars['guid']));
-
+//$contributor_text
  
 echo <<<___HTML
 
 <div>
-	<label for="transaction_amount">$contributor_label</label>
+	<label for="transaction_contributor">$contributor_label</label>
 	$contributor_text
 </div>
 
@@ -92,6 +99,8 @@ echo <<<___HTML
 	$amount_input
 </div>
 
+	$campaign_reward_text
+
 <div class="elgg-foot">
 	$guid_input
 	$container_guid_input
@@ -100,3 +109,5 @@ echo <<<___HTML
 </div>
 
 ___HTML;
+
+

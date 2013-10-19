@@ -3,11 +3,13 @@
 /.htaccess
 /mod/*
 
+
 # don't ignore bundled plugins
 !/mod/blog/
 !/mod/banner/
 !/mod/betterhash/
 !/mod/bookmarks/
+!/mod/campaign_reward
 !/mod/categories/
 !/mod/ckeditor4/
 !/mod/coopfunding_index/
@@ -21,6 +23,11 @@
 !/mod/externalpages/
 !/mod/file/
 !/mod/friendly_time
+!mod/fundcampaigns/
+!mod/fundraising/
+!mod/fundraising-bitcoin/
+!mod/fundraising-paypal/
+!mod/fundraising-bankaccount/
 !/mod/garbagecollector/
 !/mod/htmlawed/
 !/mod/invitefriends/
@@ -32,12 +39,14 @@
 !/mod/members/
 !/mod/messageboard/
 !/mod/messages/
+!/mod/moderation
 !/mod/notifications/
 !/mod/oauth_api/
 !/mod/pages/
 !/mod/profile/
 !/mod/projects/
 !/mod/projects-contact/
+!/mod/projects_social/
 !/mod/reportedcontent/
 !/mod/search/
 !/mod/tagcloud/

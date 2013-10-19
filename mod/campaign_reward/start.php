@@ -24,6 +24,9 @@ function campaign_reward_init() {
 	elgg_register_plugin_hook_handler('fundcampaigns:profilebuttons', 'fundcampaign', 'campaign_reward_set_add_button');
 	elgg_register_plugin_hook_handler('fundcampaigns:sidebarmenus', 'fundcampaign', 'campaign_reward_set_side_bar_menu');
 
+	elgg_register_plugin_hook_handler('fundraising:rewards:selector', 'campaign_reward', 'campaign_reward_selector');
+	elgg_register_plugin_hook_handler('fundraising:rewards:save', 'campaign_reward', 'campaign_reward_save');	
+
 	// add a campaign_reward widget
 	elgg_register_widget_type('campaign_reward', elgg_echo('campaign_reward'), elgg_echo('campaign_reward:widget:description'));
 
@@ -124,6 +127,7 @@ function campaign_reward_set_add_button ($hook, $entity_type, $return_value, $pa
 	campaign_reward_set_add_button_func($params->guid);
 }
 
+
 function campaign_reward_set_add_button_func ($guid) {
 
         $text = elgg_echo("campaign_reward:addreward");
@@ -138,19 +142,56 @@ function campaign_reward_set_add_button_func ($guid) {
         return false;
 }
 
-/**
- * Format and return the URL for campaign_reward.
- *
- * @param string $hook
- * @param string $type
- * @param string $url
- * @param array  $params
- * @return string URL of campaign_reward.
- */
+
 function campaign_reward_set_url($hook, $type, $url, $params) {
     
 	$entity = $params['entity'];
 	if (elgg_instanceof($entity, 'object', 'campaign_reward')) {
 		return "campaign_reward/owner/{$entity->container_guid}";
+	}
+}
+
+/**
+gets a output block {label:select} with all campaign_reward of $params['fundcampaign_guid'], and selected $params['default_value']
+
+$params['fundcampaign_guid']
+$params['default_value']
+**/
+function campaign_reward_selector ($hook, $type, $returnvalue, $params){
+
+	elgg_load_library('elgg:campaign_reward');	
+
+	$select = campaign_reward_get_selector ($params); 
+	return $select;
+
+}
+
+/*
+creates a relationship between $params['reward_guid'] and $params['transaction_guid'] type = "reward" if reward is stocked. All previous transaction's relations removed. 
+
+$params['reward_guid']
+$params['transaction_guid']
+*/
+function campaign_reward_save ($hook, $type, $returnvalue, $params){
+	
+	elgg_load_library('elgg:campaign_reward');	
+
+	$is_edited = $params['reward_guid'] != campaign_reward_get_reward_or_transaction ($params['transaction_guid']);
+	if ($is_edited) {
+		
+		$non_default_reward = $params['reward_guid'] > 0;
+		if ($non_default_reward){
+			var_dump("<br> start>campaign_reward_save> params"); var_dump($params);
+			list($is_stocked) = campaign_reward_is_stocked ($params['reward_guid']);
+			if ($is_stocked) {
+				remove_entity_relationships($params['transaction_guid'], "reward");	
+				$relation = add_entity_relationship ($params['transaction_guid'], 'reward', $params['reward_guid']);
+				var_dump("<br> start>campaign_reward_save> relation"); var_dump($relation);
+			} else {
+				register_error(elgg_echo('reward:stock_run_out_while saving'));	
+			}
+		} else {
+			remove_entity_relationships($params['transaction_guid'], "reward");	
+		}
 	}
 }

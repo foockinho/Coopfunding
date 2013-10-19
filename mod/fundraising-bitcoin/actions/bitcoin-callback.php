@@ -23,21 +23,21 @@ if (!$address) {
 	forward ("", 404);
 }
 
-list($project_guid, $user_guid) = fundraising_bitcoin_get_project_and_user_from_address($address);
+list($entity_guid, $user_guid) = fundraising_bitcoin_get_project_and_user_from_address($address);
 
-if (!$project_guid || !$user_guid) {
+if (!$entity_guid || !$user_guid) {
 	exit();
 }
 
-$project = get_entity($project_guid);
+$entity = get_entity($entity_guid);
 
-$contributions_set = fundraising_get_contributions_set($project_guid, $user_guid);
+$contributions_set = fundraising_get_contributions_set($entity_guid, $user_guid);
 $ia = elgg_set_ignore_access(true);
 if (!$contributions_set) {
 	$contributions_set = new ElggObject();
 	$contributions_set->subtype = "contributions_set";
 	$contributions_set->owner_guid = $user_guid;
-	$contributions_set->container_guid = $project_guid;
+	$contributions_set->container_guid = $entity_guid;
 	$contributions_set->save();
 }
 
@@ -47,16 +47,21 @@ if (($difference > 0) && ($timestamp > $contributions_set->timestamp)) {
 	$transaction = new ElggObject();
 	$transaction->subtype = "transaction";
 	$transaction->owner_guid =  $user_guid;
-	$transaction->container_guid = $project_guid;
+	$transaction->container_guid = $entity_guid;
 	$transaction->btc_amount = $difference;
 	$transaction->method = 'bitcoin';
 	$transaction->contributor = $user_guid;
 	$transaction->save();
 
 	$contributions_set->btc_amount = $balance;
-	$project->btc_amount += $difference;
+	$entity->btc_amount += $difference;
+
+	if ($reward_guid) {
+		$params = array('guid' => $guid, 'amount' => $amount, 'reward_guid' => $reward_guid);
+		elgg_trigger_plugin_hook('fundraising_payment',  'paid',  $params);	
+	}
 }
 elgg_set_ignore_access($ia);
 
-error_log("Project $project->name received $difference from $address.");
+error_log("Entity $entity->name received $difference from $address.");
 exit();

@@ -43,8 +43,20 @@ $owner_link = elgg_view('output/url', array(
 $author_text = elgg_echo('byline', array($owner_link));
 $date = $transaction->commit_date;
 
+if (elgg_is_active_plugin("campaign_reward")) {
+	
+    elgg_load_library('elgg:campaign_reward');
+	
+	$reward_guid = campaign_reward_get_reward_or_transaction ($transaction->guid);	
+	$reward = get_entity ($reward_guid );
+	if ($reward) {
+		$reward_title = $reward->title;	
+	} else {
+		$reward_title = "campaign_reward:noreward";
+	}
+}
 
-$subtitle = "$author_text $date $transaction->method";
+$subtitle = "$author_text $date / $transaction->method / $reward_title";
 $content = "$transaction->eur_amount" . "€";
 
 $params = array(

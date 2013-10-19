@@ -6,14 +6,14 @@
  * @subpackage Fundraising.Paypal
  */
 
-function fundraising_contribute_paypal($project_guid, $amount) {
+function fundraising_contribute_paypal($entity_guid, $amount, $reward_guid) {
 
-	$project = get_entity($project_guid);
+	$entity = get_entity($entity_guid);
 	$amount = $amount;
 
 	$return_url = elgg_add_action_tokens_to_url(elgg_get_site_url() . 'action/fundraising/paypal-callback');
 
-	if (!$project || !$amount) {
+	if (!$entity || !$amount) {
 		forward(REFERER);
 	}
 
@@ -28,9 +28,9 @@ function fundraising_contribute_paypal($project_guid, $amount) {
 
 		'PAYMENTREQUEST_0_CURRENCYCODE' => 'EUR',
 
-		'PAYMENTREQUEST_0_DESC' => elgg_echo('fundraising:contribute:desc', array($project->name)),
+		'PAYMENTREQUEST_0_DESC' => elgg_echo('fundraising:contribute:desc', array($entity->name)),
 
-		'L_PAYMENTREQUEST_0_NAME0' => elgg_echo ('fundraising:contribute:desc', array($project->name)),
+		'L_PAYMENTREQUEST_0_NAME0' => elgg_echo ('fundraising:contribute:desc', array($entity->name)),
 		'L_PAYMENTREQUEST_0_AMT0' => $amount,
 		'L_PAYMENTREQUEST_0_QTY0' => '1',
 
@@ -50,8 +50,9 @@ function fundraising_contribute_paypal($project_guid, $amount) {
 		}
 
 		$_SESSION['paypal_contrib'][$token] = array(
-			'project_guid' => $project_guid,
+			'entity_guid' => $entity_guid,
 			'amount' => $amount,
+			'reward_guid' => $reward_guid
 		);
 
 		forward('https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=' . urlencode($token));

@@ -50,6 +50,23 @@ $required = array('title', 'description', 'amount');
 foreach ($values as $name => $default) {
 	if ($name === 'title') {
 		$value = htmlspecialchars(get_input('title', $default, false), ENT_QUOTES, 'UTF-8');
+	}elseif ($name === 'stock') { 
+
+		if ($new_campaign_reward) {
+			$value = get_input('stock', 0);
+		} else {
+			//If edition, check stock conflicts,
+			elgg_load_library('elgg:campaign_reward');
+		
+			list ($can_change_stock, $missing) = campaign_reward_can_change_stock($campaign_reward->guid, get_input('stock', 0));
+			if ($can_change_stock) {
+			 	$value = get_input('stock', 0);
+			} else{
+				register_error(elgg_echo("campaign_reward:error:stock invalid. There should be {$missing} out of range"));
+				forward($error_forward_url);			
+			}				
+		}
+	
 	} else {
 		$value = get_input($name, $default);
 	}

@@ -7,9 +7,14 @@ $guid = get_input('guid');
 
 $container_guid = get_input('container_guid');
 $container = get_entity($container_guid);
+
 $contributor_guid = get_input('members')[0];
 $contributor = get_entity($contributor_guid);
+
 $amount  = (int) get_input('eur_amount');
+
+$reward_guid = (int) get_input('reward_guid');
+
 if (!$amount) {$amount=0;}
 
 $commit_date  = date(get_input('commit_date'));
@@ -67,12 +72,20 @@ if ($contributor) {
     	$transaction->contributor = $contributor_guid;
     	$transaction->commit_date = $commit_date;
         $transaction->save();
+
+		//If active plug in and has change campaign_reward, call save.
+		if (elgg_is_active_plugin("campaign_reward")) {	
+			$params = array('transaction_guid' => $transaction->guid, 'reward_guid' => $reward_guid);		
+var_dump("action_save>bankaccount> params "); var_dump($params); 
+			elgg_trigger_plugin_hook('fundraising:rewards:save', 'campaign_reward', $params);	
+		}
     }
    
     $contributions_set->eur_amount += $amount;
     $container->eur_amount += $amount;
    
-    system_message(elgg_echo('fundraising:contribute:success'));
+    system_message(elgg_echo('fundraising:contribute:success'));	
+
     forward(elgg_get_site_url() . "fundraising/bankaccount/managedeposits/{$container_guid}");
     
 } else {

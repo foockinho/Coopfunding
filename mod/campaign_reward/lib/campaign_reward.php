@@ -138,7 +138,7 @@ function campaign_reward_prepare_form_vars($campaign_reward = NULL, $container_g
 		foreach ($sticky_values as $key => $value) {
 			$values[$key] = $value;
 		}
-	}
+	}	
 
 	elgg_clear_sticky_form('campaign_reward');
 
@@ -146,5 +146,134 @@ function campaign_reward_prepare_form_vars($campaign_reward = NULL, $container_g
 		return $values;
 	}
 	return $values;
+}
+
+
+/**
+return boolean, wether this $reward_guid->stock will be exceed if we add another relationship. $Left will be written with count of relationship.
+return int, stock - count of relationship;
+
+in $accept_zero_value = 'NO' => restrict $left to 0 or not.
+**/
+function campaign_reward_is_stocked ($reward_guid, $accept_zero_value = 'NO') {
+
+	$reward = get_entity($reward_guid);
+	
+	if ($reward) {
+	
+var_dump("campaign_reward_is_stocked reward_guid: " . $reward_guid . "<br>");
+		$adjudicated_rewards =  get_entity_relationships ($reward_guid, "YES");
+		$adjudicated = sizeof($adjudicated_rewards);
+var_dump($adjudicated_rewards);
+var_dump("campaign_reward_is_stocked assigned: " . (int)$adjudicated . "<br>"); 
+var_dump("campaign_reward_is_stocked stock: " . (int)$reward->stock . "<br>"); 
+		$left = (int)$reward->stock - (int)$adjudicated;
+var_dump("campaign_reward_is_stocked left: " . $left . "<br>"); 
+		if ($accept_zero_value == 'NO') {
+			return array ($left > 0, $left);
+		} else {
+			return array ($left >= 0, $left);
+		}
+
+
+	
+	} else {
+		return false;
+	}
+
+}
+
+/*
+Search first relation kind 'reward' of $guid and returns the other $guid
+*/
+function campaign_reward_get_reward_or_transaction ($guid) {
+
+//var_dump("campaign_reward_get_reward_of_transaction transaction_guid: " . $transaction_guid . "<br>");
+
+	$relations = get_entity_relationships ($guid);
+	foreach ($relations as $relation) {
+		if ($relation->relationship == "reward") {
+			if ($guid == $relation->guid_one) {
+				return $relation->guid_two;
+			}else {
+				return $relation->guid_one;
+			}
+		}
+	}
+	return 0;
+}
+
+
+/**
+gets a output block {label:select} with all campaign_reward of $params['fundcampaign_guid'], and, if transaction is supported, then selects in the dropdown.
+
+$params['fundcampaign_guid']
+$params['transaction_guid']
+**/
+function campaign_reward_get_selector ($params){
+	
+	//Get reward list of this campaign
+	$rewards = elgg_get_entities_from_metadata(array(
+		'type' => 'object',
+		'subtype' => 'campaign_reward',
+		'container_guid' => $params['fundcampaign_guid'],
+		'order_by_metadata' => array('name' => 'amount', 'direction' => 'ASC', 'as' => 'integer')
+	));
+
+
+	//Selected values	
+	$selected_reward_guid = campaign_reward_get_reward_or_transaction ($params['transaction_guid']);	
+var_dump("campaign_reward_get_selector selected_reward_guid: " . $selected_reward_guid . "<br>"); 
+	//Fill dropdown options
+	$options = array();
+	if ($rewards) {
+
+		//none option
+		$options[0] = elgg_echo('campaign_reward:select_none');			
+
+		//For each reward...
+		foreach ($rewards as $reward){
+
+			//Get reward stock
+			list($is_stocked, $left) = campaign_reward_is_stocked ($reward->guid, 'YES');
+
+			//Display if stocked
+			if ($is_stocked)	{
+				$left_text = " / ". elgg_echo('campaign_reward:left') . " " . $left;
+				$amount_text = elgg_echo('campaign_reward:amount€') . " " . $reward->amount;
+				$options[$reward->guid] = $reward-> title . " " . $amount_text . $left_text;			
+			}
+				
+		}
+	}	
+
+	//Display input item
+	$select = elgg_view("input/dropdown", array("name" => "reward_guid", "options_values" => $options, "value" => $selected_reward_guid));	
+
+	//Display selector
+ 	$output = "<div><label>" . elgg_echo('campaign_reward:reward') . "</label><br>" . $select . "</div>";
+
+	return  $output;
+		
+}
+
+/*
+
+Returns boolean, wether changing reward's stock to $new_stock could conflict with already adjudicated to transactions.
+Return int, missing number of rewards that should be conflict.
+
+*/
+function campaign_reward_can_change_stock($reward_guid, $new_stock) {
+
+	$reward = get_entity ($reward_guid);	
+
+	if ( $reward->stock == $new_stock) {
+		return array(true);
+	} else {
+		list ($is_stockable, $left) = campaign_reward_is_stocked ($reward_guid);
+		$missing = $reward->stock - $left;
+		return array($new_stock >= $missing, $missing);
+	}
+
 }
 

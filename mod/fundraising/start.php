@@ -14,6 +14,7 @@ function fundraising_init() {
 	if (!$CONFIG->fundraising_methods) {
 		$CONFIG->fundraising_methods = array();
 	}
+	elgg_register_entity_type ('transaction');
 
 	elgg_register_library('coopfunding:fundraising', elgg_get_plugins_path() . 'fundraising/lib/fundraising.php');
 	elgg_register_page_handler('fundraising', 'fundraising_page_handler');
@@ -103,7 +104,7 @@ function fundraising_view_transactions ($guid) {
 
     	$params['filter'] = false;
         $content = elgg_list_entities_from_metadata($options);
-        
+       
 		elgg_push_breadcrumb(elgg_echo("{$container->alias}"), "{$container->getSubtype()}/{$container->alias}");
 		
 	    $params['title'] = $title;
