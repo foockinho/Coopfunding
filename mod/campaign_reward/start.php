@@ -105,16 +105,17 @@ function campaign_reward_ecml_views_hook($hook, $entity_type, $return_value, $pa
 
 function campaign_reward_set_side_bar_menu ($hook, $entity_type, $return_value, $params) {
 
-    $donatebutton = false;
-    if (elgg_is_active_plugin('fundraising')) {
-        elgg_load_library('coopfunding:fundraising');
-        
-        if (elgg_is_active_plugin('fundcampaigns')) {
-            $donatebutton = fundcampaigns_is_active_campaign($params);
-        }
-    }
+	$donatebutton = false;
+	if (elgg_is_active_plugin('fundraising')) {
+		elgg_load_library('coopfunding:fundraising');
 
-    return $return_value . elgg_view('campaign_reward/sidebar/rewards', array('entity' => $params, 'donatebutton' => $donatebutton));
+		if (elgg_is_active_plugin('fundcampaigns')) {
+			$donatebutton = fundcampaigns_is_active_campaign($params);
+			$return_value .= elgg_view('campaign_reward/sidebar/rewards', array('entity' => $params, 'donatebutton' => $donatebutton));
+		}		
+	}
+
+	return $return_value;
     
 }
 

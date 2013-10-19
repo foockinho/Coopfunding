@@ -10,12 +10,15 @@
 
 elgg_load_library('coopfunding:fundraising');
 
-$guid = $vars['entity']->guid;
+if ($vars['entity']) {
+	$guid = $vars['entity']->guid;
 
-$body = elgg_view('output/url', array(
-	'text' => elgg_echo('fundraising:bankaccount:manage'),
-	'href' => "fundraising/bankaccount/managedeposits/{$guid}",
-	'class' => "elgg-button elgg-button-action" 
-));  
+	$body = elgg_view('output/url', array(
+		'text' => elgg_echo('fundraising:bankaccount:manage'),
+		'href' => "fundraising/bankaccount/managedeposits/{$guid}",
+		'class' => "elgg-button elgg-button-action" 
+	));  
 
-echo elgg_view_module('aside', elgg_echo('fundraising:bankaccount'), $body);
+	echo elgg_view_module('aside', elgg_echo('fundraising:bankaccount'), $body);
+}
+

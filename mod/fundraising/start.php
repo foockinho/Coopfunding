@@ -22,7 +22,7 @@ function fundraising_init() {
 }
 
 function fundraising_page_handler($page, $handler) {
-    
+
 	elgg_load_library('coopfunding:fundraising');
 	switch ($page[0]) {
 		case 'contribute':
@@ -35,13 +35,13 @@ function fundraising_page_handler($page, $handler) {
             break;
         case 'view':
             fundraising_view_transactions($page[1]);
-            break;    
+            break;
 		default:
 			if (function_exists("fundraising_{$page[0]}_page_handler")) {
 			    $return = call_user_func("fundraising_{$page[0]}_page_handler", $page, $handler);
 				break;
 			}
-			
+
 	}
 }
 
@@ -67,23 +67,22 @@ function fundraising_register_currency($currency) {
 
 function fundraising_set_side_bar_menu ($hook, $entity_type, $return_value, $params) {
 
-    if (!elgg_instanceof($params, 'object', 'fundcampaign')) {
-		return  $return_value;
+    	if (elgg_instanceof($params, 'object', 'fundcampaign')) {
+	    	$entity = get_entity($params->container_guid);
+	} else {
+	    	$entity = $params;
+	}	
+	if ($entity) {
+		if ($entity->isMember() || elgg_is_admin_logged_in()) {
+			$return_value .= elgg_view('fundcampaigns/sidebar/manage', array('entity' => $params));
+		}
 	}
-      
-    $project = get_entity($params->container_guid);
-	if ($project->isMember()) {
-	 
-		return elgg_view('fundcampaigns/sidebar/manage', array('entity' => $params));
-		
-	}else{return "error";}
-
 	return $return_value;
-    
+
 }
 
 function fundraising_view_transactions ($guid) {
-    
+
     $params = array();
 
     $params['filter_context'] = 'mine';

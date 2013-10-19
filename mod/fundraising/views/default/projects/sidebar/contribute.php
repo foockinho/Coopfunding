@@ -40,7 +40,9 @@ $body .= "<br>" . elgg_view('output/url', array(
 $amount = elgg_echo('fundraising:contributions:amount', array($contributions_amount));
 $amount .= elgg_echo('fundraising:contributions:of');
 $amount .= elgg_echo('fundraising:contributions:eur', array($vars['entity']->total_amount));
-$amount .= "\n" . elgg_echo($contributions_amount / $vars['entity']->total_amount * 100) . '%';
+if ($vars['entity']->total_amount > 0) {
+	$amount .= "\n" . elgg_echo($contributions_amount / $vars['entity']->total_amount * 100) . '%';
+}
 
 $body .= "<br>" . elgg_view('output/text', array(
 	'value' => $amount,

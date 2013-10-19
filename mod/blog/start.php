@@ -297,5 +297,5 @@ function blog_run_upgrades($event, $type, $details) {
 
 function blog_set_project_campaign_sidebar_menu ($hook, $type, $return, $params)
 {
-     blog_entity_menu_setup($hook, $type, $return, $params);
+     return blog_entity_menu_setup($hook, $type, $return, $params);
 }

@@ -134,19 +134,19 @@ function fundraising_bankaccount_managedeposits_set_add_button_func ($guid) {
 
 function fundraising_bankaccount_set_side_bar_menu ($hook, $entity_type, $return_value, $params) {
 
-    if (!elgg_instanceof($params, 'object', 'fundcampaign')) {
-		return  $return_value;
-	}
-      
-    $project = get_entity($params->container_guid);
-	if ($project->isMember()) {
-	    
-		$sidebar = elgg_view('sidebar/transactions', array('entity' => $params));
+	if (elgg_instanceof($params, 'object', 'fundcampaign')) {
+	    	$entity = get_entity($params->container_guid);
+	} else {
+	    	$entity = $params;
+	}	
 
-		return $return_value . $sidebar;
-	}else{return "error";}
+	if ($entity) {
+		if ($entity->isMember() || elgg_is_admin_logged_in()) {
+			 $return_value .= elgg_view('sidebar/transactions', array('entity' => $params));
+		}
+	} 
 
-	return $return_value;
+	return $return_value;    
     
 }
 

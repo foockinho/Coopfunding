@@ -216,11 +216,8 @@ function fundcampaigns_handle_view_page($guid) {
 	$content = elgg_view('fundcampaigns/profile/layout', array('entity' => $fundcampaign));
 	$sidebar .= elgg_view('fundcampaigns/sidebar/contribute', array('entity' => $fundcampaign));
     
-	$sidebar .= elgg_trigger_plugin_hook('fundcampaigns:sidebarmenus', 'fundcampaign', $fundcampaign, array('entity' => $fundcampaign));
-    
-	if (elgg_is_active_plugin('search')) {
-		$sidebar .= elgg_view('fundcampaigns/sidebar/search', array('entity' => $fundcampaign));
-	}
+	$sidebar .= elgg_trigger_plugin_hook('fundcampaigns:sidebarmenus', 'fundcampaign', $fundcampaign);
+ 
 	$sidebar .= elgg_view('fundcampaigns/sidebar/members', array('entity' => $fundcampaign));
 
 	$params = array(
