@@ -1,0 +1,31 @@
+
+<?php
+/**
+ * Campaign_reward sidebar list
+ */
+
+$fundcampaign = $vars['entity'];
+
+$entities = elgg_get_entities_from_metadata(array(
+	'type' => 'object',
+	'subtype' => 'campaign_reward',
+	'container_guid' => $fundcampaign->guid,
+	'order_by_metadata' => array('name' => 'amount', 'direction' => 'ASC', 'as' => 'integer'),
+	'limit'=> 5
+));
+
+$url = elgg_get_site_url() . "campaign_reward/owner/{$fundcampaign->guid}";
+$content = "<a href=" .  $url . ">" . elgg_echo('campaign_reward:view all') . "</a>";
+$content .= "<ul>";
+
+foreach ($entities as $entity){
+    if ($vars['donatebutton']) {
+        $donatebuttons_link = fundraising_get_contribute_button ($fundcampaign->guid, $entity->amount, $entity->guid);
+    }
+    $content.= "<li><div><b>" . $entity->title . "</b><br>" . $entity->description . $donatebuttons_link . "</div></li><br>";
+}
+
+$content .= "</ul>";
+
+$title = elgg_echo('campaign_reward:items');
+echo elgg_view_module('aside', $title, $content);	
