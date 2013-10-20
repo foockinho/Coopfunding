@@ -47,20 +47,20 @@ function moderation_register_toggle() {
 
 function get_moderation_last_revision($entity) {
 
-	$revisions = elgg_get_entities_from_metadata( array(
-		'type' => 'object',
-		'subtype' => 'revision',		
-		'container_guid' => $entity->guid,
-		'metadata_name' => 'state',
-		'metadata_value' => 'in_progress',
-		));
+	if ($entity) {
+		$revisions = elgg_get_entities_from_metadata( array(
+			'type' => 'object',
+			'subtype' => 'revision',		
+			'container_guid' => $entity->guid,
+			'metadata_name' => 'state',
+			'metadata_value' => 'in_progress',
+			));
 	
-	if($revisions) {		
-		
-		return $revisions[0];
-	}else {
-		return null;
+		if($revisions) {				
+			return $revisions[0];
+		}
 	}
+	return null;
 }
 
 function get_moderation_revisions($entity) {
@@ -74,18 +74,6 @@ function get_moderation_revisions($entity) {
 	return $revisions;
 }
 
-function do_moderation_save ($entity, $input) {
-
-	if ($entity) {
-		if (elgg_is_admin_logged_in()){
-			return do_moderation_admin_save($entity, $input);
-		} else {
-			return do_moderation_user_save($entity, $input);
-		}
-	} else {
-		return false;
-	}	
-}
 
 function do_moderation_user_save($entity, $input) {	
 

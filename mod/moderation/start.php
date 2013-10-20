@@ -7,6 +7,7 @@ function moderation_init() {
 	//Register library
 	elgg_register_library('elgg:moderation', elgg_get_plugins_path() . 'moderation/lib/moderation.php');
 
+
 	//Register actions
 	$action_base = elgg_get_plugins_path() . 'moderation/actions';
 	//elgg_register_action("moderation/save", "$action_base/save.php", 'public');
@@ -23,6 +24,8 @@ function moderation_init() {
 	elgg_register_page_handler('moderation', 'moderation_page_handler');
 	
 	// Register plugin hooks
+	elgg_register_plugin_hook_handler('projects:moderation:save', 'entity', 'moderation_do_save');
+
         /*elgg_register_plugin_hook_handler('permissions_check', 'group', 'projects_permissions_hook');
         elgg_register_plugin_hook_handler('container_permissions_check', 'group', 'projects_container_permissions_hook');*/
 
@@ -102,4 +105,18 @@ function moderation_handle_main_page() {
 	echo elgg_view_page($title, $body);
 }
 
+function moderation_do_save ($hook, $type, $returnvalue, $params) {
+
+	$entity = $params['entity'];
+	$input = $params['input'];
+	if ($entity) {
+		if (elgg_is_admin_logged_in()){
+			return do_moderation_admin_save($entity, $input);
+		} else {
+			return do_moderation_user_save($entity, $input);
+		}
+	} else {
+		return REFERER;
+	}	
+}
 
