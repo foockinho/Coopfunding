@@ -40,6 +40,18 @@ function fundraising_bitcoin_page_handler($page) {
     		    elgg_load_library("elgg:{$entities_text}");
     		    
     			elgg_set_page_owner_guid($entity->guid);
+
+				if (elgg_is_active_plugin("campaign_reward") && get_input('reward_guid') && $entity->getSubtype = 'fundcampaign' ) {	
+						$params = array(
+							'user_guid' => elgg_logged_in_user_entity()->guid, 
+							'fundcampaign_guid' => $entity->guid, 
+							'reward_guid' => get_input('reward_guid'),
+							'amount' => get_input('amount'),
+							'method' => 'bitcoin'
+						);		
+	
+						$books_text = elgg_trigger_plugin_hook('fundraising:transaction:do_books', 'do_books', $params);	
+				}
     
     			elgg_push_breadcrumb(elgg_echo("{$entities_text}"), "{$entities_text}/all");
     			elgg_push_breadcrumb($entity->name, $entity->getURL());

@@ -5,8 +5,6 @@
  * @package transaction
  */
 
-$verifybutton = elgg_extract('verifybutton', $vars, FALSE);
-//$full = elgg_extract('full_view', $vars, FALSE);
 $transaction = elgg_extract('entity', $vars, FALSE);
 
 if (!$transaction) {
@@ -28,10 +26,7 @@ if (elgg_is_active_plugin('fundraising')) {
     elgg_load_library('coopfunding:fundraising');
     
     $container = $transaction->container_guid;
-    
-    if ($verifybutton) {
-        //$metadata .= "confirm button";
-    }
+  
 }
 
 $owner_icon = elgg_view_entity_icon($owner, 'tiny');
@@ -45,10 +40,11 @@ $date = $transaction->commit_date;
 
 if (elgg_is_active_plugin("campaign_reward")) {
 	
-    elgg_load_library('elgg:campaign_reward');
-	
-	$reward_guid = campaign_reward_get_reward_or_transaction ($transaction->guid);	
-	$reward = get_entity ($reward_guid );
+    elgg_load_library('elgg:campaign_reward');	
+	$reward_guid = campaign_reward_get_reward_or_transaction($transaction->guid);	
+var_dump("se busca ". $transaction->guid . ">>>" . $reward_guid);
+	$reward = get_entity($reward_guid);
+	var_dump($transaction->guid);
 	if ($reward) {
 		$reward_title = $reward->title;	
 	} else {

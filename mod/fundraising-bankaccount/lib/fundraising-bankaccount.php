@@ -6,8 +6,8 @@
  * @subpackage Fundraising.bankaccount
  */
 
-function fundraising_contribute_bankaccount($guid, $amount, $reward) {
-	forward(elgg_get_site_url() . "fundraising/bankaccount/contribute/$guid&amount=$amount&reward=$reward");
+function fundraising_contribute_bankaccount($guid, $amount, $reward_guid) {
+	forward(elgg_get_site_url() . "fundraising/bankaccount/contribute/$guid&amount=$amount&reward_guid=$reward_guid");
 }
 
 function fundraising_bankaccount_managedeposits_get_page_content_list($guid = NULL) {

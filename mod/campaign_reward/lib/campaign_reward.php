@@ -106,6 +106,32 @@ function campaign_reward_get_page_content_edit($page, $guid = NULL) {
 	return $return;
 }
 
+function campaign_reward_get_page_content_books () {
+
+    $params = array();
+
+    $params['filter_context'] = 'mine';
+
+	$options = array(	
+		'type' => 'object',
+		'subtype' => 'reward_book',		
+		'full_view' => false,
+		'no_results' => elgg_echo('fundraising:notbookmarks'),
+	);
+
+	$title = elgg_echo('campaign_reward:reward_books');
+	$content = elgg_list_entities_from_metadata($options);
+   
+  	elgg_push_breadcrumb(elgg_echo("campaign_reward:books"));
+		
+    $params['title'] = $title;
+    $params['content'] = $content;
+	$params['filter'] = "";
+		
+	return $params;
+	
+}
+
 /**
  * Pull together campaign_reward variables for the save form
  *

@@ -7,7 +7,7 @@
  *
  */
 $guid = get_input('guid');
-$reward_guid = get_input('reward');
+$reward_guid = get_input('reward_guid');
 
 $entity = get_entity($guid);
 $amount = get_input('amount');

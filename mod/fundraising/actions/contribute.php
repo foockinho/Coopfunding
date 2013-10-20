@@ -5,7 +5,8 @@ elgg_load_library('coopfunding:fundraising');
 
 $guid = get_input('guid');
 $amount = get_input('amount');
-$reward = get_input('reward_guid'); 
+$reward_guid = get_input('reward_guid'); 
+
 $methods = fundraising_get_methods();
 
 foreach ($methods as $method) {
@@ -15,8 +16,8 @@ foreach ($methods as $method) {
 			elgg_load_library("coopfunding:fundraising:{$method}");
 		}
 		if (function_exists("fundraising_contribute_{$method}")) {
-		    call_user_func("fundraising_contribute_{$method}", $guid, $amount, $reward);
-		}
+		    call_user_func("fundraising_contribute_{$method}", $guid, $amount, $reward_guid);
+		}		
 	}
 }
 

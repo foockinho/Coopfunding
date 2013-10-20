@@ -18,22 +18,27 @@ function campaign_reward_init() {
 	// routing of urls
 	elgg_register_page_handler('campaign_reward', 'campaign_reward_page_handler');
 
-    	// Register for search.
+    // Register for search.
 	elgg_register_entity_type('object', 'campaign_reward');
+	elgg_register_entity_type('object', 'reward_book');
 
 	elgg_register_plugin_hook_handler('fundcampaigns:profilebuttons', 'fundcampaign', 'campaign_reward_set_add_button');
 	elgg_register_plugin_hook_handler('fundcampaigns:sidebarmenus', 'fundcampaign', 'campaign_reward_set_side_bar_menu');
 
 	elgg_register_plugin_hook_handler('fundraising:rewards:selector', 'campaign_reward', 'campaign_reward_selector');
-	elgg_register_plugin_hook_handler('fundraising:rewards:save', 'campaign_reward', 'campaign_reward_save');	
+	elgg_register_plugin_hook_handler('fundraising:rewards:save', 'campaign_reward', 'campaign_reward_save');
+
+	elgg_register_plugin_hook_handler('fundraising:transaction:do_books', 'do_books', 'campaign_reward_do_books');		
 
 	// add a campaign_reward widget
 	elgg_register_widget_type('campaign_reward', elgg_echo('campaign_reward'), elgg_echo('campaign_reward:widget:description'));
 
 	// register actions
-	$action_path = elgg_get_plugins_path() . 'campaign_reward/actions/campaign_reward';
-	elgg_register_action('campaign_reward/save', "$action_path/save.php");
-	elgg_register_action('campaign_reward/delete', "$action_path/delete.php");
+	$action_path = elgg_get_plugins_path() . 'campaign_reward/actions';
+	elgg_register_action('campaign_reward/save', "$action_path/campaign_reward/save.php");
+	elgg_register_action('campaign_reward/delete', "$action_path/campaign_reward/delete.php");
+	elgg_register_action('reward_book/commit', "$action_path/reward_book/commit.php");
+	elgg_register_action('reward_book/delete', "$action_path/reward_book/delete.php");
 
 	// override the default url to view a campaign object
 	elgg_register_plugin_hook_handler('entity:url', 'campaign_reward', 'campaign_reward_set_url');
@@ -72,13 +77,16 @@ function campaign_reward_page_handler($page) {
 			campaign_reward_set_add_button_func($page[1]);
 			break;
 		case 'add':
-			gatekeeper();
-		
+			gatekeeper();		
 			$params = campaign_reward_get_page_content_edit($page_type, $page[1]);
 			break;
 		case 'edit':
 			gatekeeper();
 			$params = campaign_reward_get_page_content_edit($page_type, $page[1]);
+			break;
+		case 'books':
+			gatekeeper();
+			$params = campaign_reward_get_page_content_books();
 			break;
 		default:
 			return false;
@@ -181,17 +189,55 @@ function campaign_reward_save ($hook, $type, $returnvalue, $params){
 		
 		$non_default_reward = $params['reward_guid'] > 0;
 		if ($non_default_reward){
-			var_dump("<br> start>campaign_reward_save> params"); var_dump($params);
+			var_dump("<br> start>campaign_reward_save> params"); var_dump($params); 
 			list($is_stocked) = campaign_reward_is_stocked ($params['reward_guid']);
+			var_dump("es verdadero: " . $is_stocked); 
 			if ($is_stocked) {
 				remove_entity_relationships($params['transaction_guid'], "reward");	
 				$relation = add_entity_relationship ($params['transaction_guid'], 'reward', $params['reward_guid']);
 				var_dump("<br> start>campaign_reward_save> relation"); var_dump($relation);
 			} else {
 				register_error(elgg_echo('reward:stock_run_out_while saving'));	
+				forward(REFERER);
 			}
 		} else {
 			remove_entity_relationships($params['transaction_guid'], "reward");	
 		}
 	}
 }
+
+/*
+Creates a bookobject on user_guid and fundcampaign_guid and a relation with reward_guid.
+
+$params['reward_guid']	
+$params['user_guid']
+$params['fundcampaign_guid']
+$params['amount']
+$params['method']
+*/
+function campaign_reward_do_books ($hook, $type, $returnvalue, $params){
+	
+	elgg_load_library('elgg:campaign_reward');	
+
+	$is_bookable = campaign_reward_is_stocked ($params['reward_guid']);
+
+	if ($is_bookable) {
+		$book = new ElggObject();	
+		$book->type = 'object';
+		$book->subtype = 'reward_book';
+		$book->owner_guid = $params['user_guid'];
+		$book->container_guid = $params['fundcampaign_guid'];
+
+		$book->amount = $params['amount'];
+		$book->method = $params['method'];				
+		$book->contributor =$params['user_guid'];				
+		$book->save();
+		add_entity_relationship ($book->guid, 'reward', $params['reward_guid']);
+		var_dump("Do book with: " . $book->guid . " and " . $params['reward_guid']); 
+	}else {
+		register_error(elgg_echo('reward:stock_insuficient_nothing_booked'));	
+	}
+	
+}
+
+

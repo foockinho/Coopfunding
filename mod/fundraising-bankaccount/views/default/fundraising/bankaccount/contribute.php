@@ -30,13 +30,6 @@ echo elgg_view('output/url', array(
 	'class' => 'elgg-button elgg-button-action',
 ));
 
-if (get_input('reward_guid')) {
-    $bookreward = new ElggObject ();
-    $bookreward->owner_guid = $user->guid;
-    $bookreward->container_guid = $entity->guid;
-    $bookreward->reward = get_input('reward');
-    $bookreward->save();
-}
 
 
 

@@ -83,11 +83,24 @@ function fundraising_bankaccount_page_handler($page) {
 function fundraising_bankaccount_contribute_page ($entity) {
     
     elgg_push_breadcrumb(elgg_echo('fundraising:contribute'));
+
+	if (elgg_is_active_plugin("campaign_reward") && get_input('reward_guid') && $entity->getSubtype = 'fundcampaign' ) {	
+			$params = array(
+				'user_guid' => elgg_get_logged_in_user_entity()->guid, 
+				'fundcampaign_guid' => $entity->guid, 
+				'reward_guid' => get_input('reward_guid'),
+				'amount' => get_input('amount'),
+				'method' => 'bankaccount'
+			);		
+	
+			$books_text = elgg_trigger_plugin_hook('fundraising:transaction:do_books', 'do_books', $params);	
+	}
     
     $title = elgg_echo('fundraising:bankaccount:title', array($entity->name));
 	$content = elgg_view('fundraising/bankaccount/contribute', array(
 		'entity' => $entity,
 		'amount' => get_input('amount'),
+		'reward_guid' => get_input('reward_guid'),
 	));
 	
 	$body = elgg_view_layout('content', array(
