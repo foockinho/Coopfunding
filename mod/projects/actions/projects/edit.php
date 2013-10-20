@@ -43,10 +43,23 @@ if ($project_guid = (int)get_input('project_guid')) {
 		register_error(elgg_echo("projects:cantedit"));
 		forward(REFERER);
 	}
+
+	//MODERATION PLUGIN INTERCEPTION____________________________________
+	$input['access_id'] = (int)get_input('vis', '', false);
+	$params = array ('entity'=> $project, 'input' => $input); 
+	if (elgg_is_active_plugin('moderation')) {		
+		$forward_url = elgg_trigger_plugin_hook('projects:moderation:save', 'entity', $params);
+		elgg_clear_sticky_form('projects');
+		forward($forward_url);	
+	}
+	//_____________________________________MODERATION PLUGIN INTERCEPTION
+
+	
 } else {
 	$project = new ElggGroup();
 	$project->subtype = 'project';
 	$is_new_project = true;
+	$project->state = "in_progress"; //__MODERATION PLUGIN INTERCEPTION
 }
 
 elgg_load_library('elgg:projects');

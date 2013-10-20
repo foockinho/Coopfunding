@@ -10,45 +10,74 @@
 $name = $alias = $vis = $entity = null;
 extract($vars, EXTR_IF_EXISTS);
 
+$moderate = elgg_is_active_plugin('moderation');
+if ($moderate) {
+	elgg_load_library('elgg:moderation');	
+	$revision = get_moderation_last_revision($entity);	
+}
+?>
+
 ?>
 <div>
 	<label><?php echo elgg_echo("fundcampaigns:icon"); ?></label><br />
 	<?php echo elgg_view("input/file", array('name' => 'icon')); ?>
 </div>
 <div>
-	<label><?php echo elgg_echo("fundcampaigns:name"); ?></label><br />
-	<?php echo elgg_view("input/text", array(
-		'name' => 'name',
-		'value' => $name
-	));
+	<?php
+
+		if ($moderate) {
+			echo moderation_get_field ($revision, 'fundcampaigns', 'name', 'text', $name);
+		} else {
+			echo "<div><label>";
+			echo elgg_echo("fundcampaigns:name");
+			echo "</label><br />";
+			echo elgg_view("input/text", array(
+				'name' => name,
+				'value' => $name
+			));
+			echo '</div>';
+		}
 	?>
 </div>
 <div>
-	<label><?php echo elgg_echo("fundcampaigns:alias"); ?></label><br />
-	<?php echo elgg_view("input/text", array(
-		'name' => 'alias',
-		'value' => $alias
-	));
+		<?php
+
+		if ($moderate) {
+			echo moderation_get_field ($revision, 'fundcampaigns', 'alias', 'text', $alias);
+		} else {
+			echo "<div><label>";
+			echo elgg_echo("fundcampaigns:alias");
+			echo "</label><br />";
+			echo elgg_view("input/text", array(
+				'name' => name,
+				'value' => $alias
+			));
+			echo '</div>';
+		}
 	?>
 </div>
 <?php
 
-$fundcampaign_profile_fields = elgg_get_config('fundcampaigns');
-
+$fundcampaign_profile_fields = elgg_get_config('fundcampaign');
 if ($fundcampaign_profile_fields > 0) {
 	foreach ($fundcampaign_profile_fields as $shortname => $valtype) {
 		$line_break = '<br />';
 		if ($valtype == 'longtext') {
 			$line_break = '';
 		}
-		
-		echo '<div><label>';
-		echo elgg_echo("fundcampaigns:{$shortname}");
-		echo "</label>$line_break";
-		
 
-		echo elgg_view("input/{$valtype}", array('name' => $shortname, 'value' => elgg_extract($shortname, $vars)));
-		echo '</div>';
+		if ($moderate) {
+			echo moderation_get_field ($revision, 'fundcampaigns', $shortname, $valtype, elgg_extract($shortname, $vars));
+		} else{
+			echo "<div><label>";
+			echo elgg_echo("projects:{$shortname}");
+			echo "</label>$line_break";
+			echo elgg_view("input/{$valtype}", array(
+				'name' => $shortname,
+				'value' => elgg_extract($shortname, $vars)
+			));
+			echo '</div>';
+		}
 	}
 }
 
@@ -150,6 +179,17 @@ if ($entity) {
 		'confirm' => elgg_echo('fundcampaigns:deletewarning'),
 		'class' => 'elgg-button elgg-button-delete float-alt',
 	));
+}
+
+//Moderation user button to request publish the project
+if ($entity) {
+	if (elgg_is_active_plugin("moderation")) {
+		if (elgg_is_admin_logged_in()) {
+			echo moderation_get_request_admin_button ($entity->getGUID());
+		}else {
+			echo moderation_get_request_user_button ($entity->getGUID());
+		}		
+	}	
 }
 ?>
 </div>

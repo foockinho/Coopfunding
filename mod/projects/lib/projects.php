@@ -220,6 +220,10 @@ function projects_handle_edit_page($page, $guid = 0) {
 		}
 	}
 	
+	if (elgg_is_admin_logged_in() && elgg_is_active_plugin("moderation")) {
+		$sidebar = elgg_view('moderation/sidebar');
+	}
+
 	$params = array(
 		'content' => $content,
 		'title' => $title,

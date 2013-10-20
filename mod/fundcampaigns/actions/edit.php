@@ -45,10 +45,21 @@ if ($fundcampaign_guid = (int)get_input('fundcampaign_guid')) {
 		register_error(elgg_echo("fundcampaigns:cantedit"));
 		forward(REFERER);
 	}
+
+	//MODERATION PLUGIN INTERCEPTION____________________________________
+	$input['access_id'] = (int)get_input('vis', '', false);
+	if (elgg_is_active_plugin('moderation')) {
+		elgg_load_library('elgg:moderation'); 
+		$forward_url = do_moderation_save ($fundcampaign, $input);	
+		elgg_clear_sticky_form('projects');
+		forward($forward_url);	
+	}
+	//_____________________________________MODERATION PLUGIN INTERCEPTION
 } else {
 	$fundcampaign = new ElggObject();
 	$fundcampaign->subtype = 'fundcampaign';
 	$is_new_fundcampaign = true;
+	$fundcampaign->state = "in_progress"; //__MODERATION PLUGIN INTERCEPTION
 }
 
 elgg_load_library('elgg:fundcampaigns');
