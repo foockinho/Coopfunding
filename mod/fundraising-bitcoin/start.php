@@ -41,15 +41,18 @@ function fundraising_bitcoin_page_handler($page) {
     		    
     			elgg_set_page_owner_guid($entity->guid);
 
+				elgg_load_library('coopfunding:fundraising:bitcoin');
+				$address = fundraising_bitcoin_get_address($entity->guid);
+			
 				if (elgg_is_active_plugin("campaign_reward") && get_input('reward_guid') && $entity->getSubtype = 'fundcampaign' ) {	
 						$params = array(
 							'user_guid' => elgg_get_logged_in_user_guid(),
 							'fundcampaign_guid' => $entity->guid, 
 							'reward_guid' => get_input('reward_guid'),
 							'amount' => get_input('amount'),
-							'method' => 'bitcoin'
-						);		
-	
+							'method' => 'bitcoin',
+							'book_search_code' => $address
+						);			
 						$books_text = elgg_trigger_plugin_hook('fundraising:transaction:do_books', 'do_books', $params);	
 				}
     
@@ -61,6 +64,7 @@ function fundraising_bitcoin_page_handler($page) {
     			$content = elgg_view('fundraising/bitcoin/contribute', array(
     				'entity' => $entity,
     				'amount' => get_input('amount'),
+					'address' => $address,
     			));
     			$body = elgg_view_layout('content', array(
     				'title' => $title,

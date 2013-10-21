@@ -26,6 +26,7 @@ function campaign_reward_init() {
 	elgg_register_plugin_hook_handler('fundcampaigns:sidebarmenus', 'fundcampaign', 'campaign_reward_set_side_bar_menu');
 
 	elgg_register_plugin_hook_handler('fundraising:rewards:selector', 'campaign_reward', 'campaign_reward_selector');
+	
 	elgg_register_plugin_hook_handler('fundraising:rewards:save', 'campaign_reward', 'campaign_reward_save');
 
 	elgg_register_plugin_hook_handler('fundraising:transaction:do_books', 'do_books', 'campaign_reward_do_books');		
@@ -100,9 +101,6 @@ function campaign_reward_page_handler($page) {
 	return true;
 }
 
-
-
-
 /**
  * Register campaign_reward with ECML.
  */
@@ -173,33 +171,49 @@ function campaign_reward_selector ($hook, $type, $returnvalue, $params){
 }
 
 /*
-creates a relationship between $params['reward_guid'] and $params['transaction_guid'] type = "reward" if reward is stocked. All previous transaction's relations removed. 
+creates a relationship between $params['reward_guid'] and $params['transaction_guid'] type = "reward" if reward is stocked. All previous transaction's relations removed. If there were any book before, removes it.
 
-$params['reward_guid']
 $params['transaction_guid']
+$params['book_search_code'] some code stored by pay method in booking to find book entity.
+$params['referer_if out stock']    if yes, goes back to referer if stocked. else, inform but pass.
+
 */
 function campaign_reward_save ($hook, $type, $returnvalue, $params){
 	
 	elgg_load_library('elgg:campaign_reward');	
+	
+	$reward_guid = $params['reward_guid'];
 
-	$is_edited = $params['reward_guid'] != campaign_reward_get_reward_or_transaction ($params['transaction_guid']);
-	if ($is_edited) {
-		
-		$non_default_reward = $params['reward_guid'] > 0;
+	if ($params['book_search_code']) {
+		$reward_book = campaign_reward_get_reward_book ($params['book_search_code']);
+		if (!$reward_guid) {
+			$reward_guid = campaign_reward_get_reward_or_transaction ($reward_book_guid);
+		}
+	}
+
+	$related_guid = campaign_reward_get_reward_or_transaction ($params['transaction_guid']);
+
+	$is_edited = $related_guid != $reward_guid;	
+	if ($is_edited) {	
+
+		remove_entity_relationships($params['transaction_guid'], "reward");	
+		if ($reward_book) {
+			$reward_book->delete();
+		}
+
+		$non_default_reward = $reward_guid > 0;
 		if ($non_default_reward){
 			
-			list($is_stocked) = campaign_reward_is_stocked ($params['reward_guid']);
+			list($is_stocked) = campaign_reward_is_stocked ($reward_guid);
 			
-			if ($is_stocked) {
-				remove_entity_relationships($params['transaction_guid'], "reward");	
-				$relation = add_entity_relationship ($params['transaction_guid'], 'reward', $params['reward_guid']);
-			
+			if ($is_stocked) {		
+				$relation = add_entity_relationship ($params['transaction_guid'], 'reward', $reward_guid);			
 			} else {
-				register_error(elgg_echo('reward:stock_run_out_while saving'));	
+				if ($params['referer_if out stock']) {
+					register_error(elgg_echo('campaign_reward:reward:nostocked'));	
+				}
 				forward(REFERER);
-			}
-		} else {
-			remove_entity_relationships($params['transaction_guid'], "reward");	
+			}		
 		}
 	}
 }
@@ -220,6 +234,7 @@ function campaign_reward_do_books ($hook, $type, $returnvalue, $params){
 	$is_bookable = campaign_reward_is_stocked ($params['reward_guid']);
 
 	if ($is_bookable) {
+		
 		$book = new ElggObject();	
 		$book->type = 'object';
 		$book->subtype = 'reward_book';

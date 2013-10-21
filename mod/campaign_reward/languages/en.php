@@ -29,7 +29,7 @@
 	'campaign_reward:deleted' => 'Reward deleted',
 
 	'campaign_reward:error:item_not_found' => 'Reward not found',
-	'campaign_reward:error:cannot_write_to_container' => 'Cannto write the reward in the project',
+	'campaign_reward:error:cannot_write_to_container' => 'Can not write the reward in the project',
 	'campaign_reward:error:cannot_delete_item' => 'Reward not deleted. Please, try again.',
 	'campaign_reward:error:cannot_save' => 'Reward not saved. Please, try again.',
 
@@ -41,6 +41,8 @@
 	'campaign_reward:error:missing:description' => 'Please enter a description!',
 	'campaign_reward:error:cannot_edit_campaign_reward' => 'This reward may not exist or you may not have permissions to edit it.',
 	'campaign_reward:error:campaign_reward_not_found' => 'Cannot find specified reward.',
+
+	'campaign_reward:reward:nostocked' => 'There are no stock to adjudicate reward. No reward adjudicated.'
 
 );
 

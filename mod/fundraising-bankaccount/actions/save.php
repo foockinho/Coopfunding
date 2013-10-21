@@ -74,10 +74,14 @@ if ($contributor) {
     	$transaction->commit_date = $commit_date;
         $transaction->save();
 
-		//If active plug in and has change campaign_reward, call save.
 		if (elgg_is_active_plugin("campaign_reward")) {	
-			$params = array('transaction_guid' => $transaction->guid, 'reward_guid' => $reward_guid);		
-
+			elgg_load_library('coopfunding:fundraising:bankaccount');
+			$params = array(
+				'transaction_guid' => $transaction->guid, 
+				'reward_guid' => $reward_guid, 
+				'book_search_code'=> fundraising_bankaccount_get_transaction_code($entity_guid, $contributor_guid), 
+				'referer_if out stock' => true
+			);		
 			elgg_trigger_plugin_hook('fundraising:rewards:save', 'campaign_reward', $params);	
 		}
     }

@@ -1,7 +1,6 @@
 <?php
 
-elgg_load_library('coopfunding:fundraising:bitcoin');
-$address = fundraising_bitcoin_get_address($vars['entity']->guid, elgg_get_logged_in_user_guid());
+$address = $vars["address"]; 
 
 //show btc address and qr image
 echo '<div>';

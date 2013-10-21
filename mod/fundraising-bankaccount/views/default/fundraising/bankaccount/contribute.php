@@ -5,7 +5,7 @@ elgg_load_library('coopfunding:fundraising:bankaccount');
 
 $entity = $vars['entity'];
 $user = elgg_get_logged_in_user_entity();
-$code = $entity->guid . '0' . $user->guid;
+$code = fundraising_bankaccount_get_transaction_code($entity->guid, $user->guid);
 $ban = elgg_get_config('ban');
 $amount = $vars['amount'];
 

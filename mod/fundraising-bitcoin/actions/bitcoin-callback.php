@@ -54,11 +54,19 @@ if (($difference > 0) && ($timestamp > $contributions_set->timestamp)) {
 	$transaction->save();
 
 	$contributions_set->btc_amount = $balance;
-	$entity->btc_amount += $difference;
+	$entity->btc_amount += $difference;	
 
-	
+	if (elgg_is_active_plugin("campaign_reward")) {	
+		$params = array('transaction_guid' => $transaction->guid, 'book_search_code' => $address);		
+		elgg_trigger_plugin_hook('fundraising:rewards:save', 'campaign_reward', $params);	
+	}	
 }
+
+
+
 elgg_set_ignore_access($ia);
+
+
 
 error_log("Entity $entity->name received $difference from $address.");
 exit();

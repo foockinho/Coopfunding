@@ -93,6 +93,9 @@ function fundraising_bankaccount_get_page_content_edit($page, $guid = NULL) {
 	
 	return $return;
 }
+function fundraising_bankaccount_get_transaction_code ($entity_guid, $user_guid) {
+	return $entity_guid . "-" . $user_guid;	
+}
 
 function fundraising_bankaccount_prepare_form_vars($transaction = NULL, $container_guid = NULL) {
 

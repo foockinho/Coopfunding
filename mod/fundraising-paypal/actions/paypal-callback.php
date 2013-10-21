@@ -58,10 +58,11 @@ if ($token && isset($_SESSION['paypal_contrib'][$token])) { // Token parameter e
 
 	system_message(elgg_echo('fundraising:contribute:success'));
 
-	if ($reward_guid) {
-		$params = array('guid' => $guid, 'amount' => $amount, 'reward_guid' => $reward_guid);
-		elgg_trigger_plugin_hook('fundraising_payment',  'paid',  $params);	
+	if (elgg_is_active_plugin("campaign_reward")) {	
+		$params = array('transaction_guid' => $transaction->guid, 'reward_guid' => $reward_guid);		
+		elgg_trigger_plugin_hook('fundraising:rewards:save', 'campaign_reward', $params);	
 	}
+
 	forward($entity->getURL());
 }
 
