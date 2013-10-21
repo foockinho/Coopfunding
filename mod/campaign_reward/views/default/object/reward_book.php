@@ -34,13 +34,15 @@ $metadata .= elgg_view('output/confirmlink', array(
 	'class' => 'elgg-icon elgg-icon-delete float-alt',
 ));
 
-$metadata .= elgg_view('output/confirmlink', array(
-	'href' => "action/reward_book/commit?guid=" . $reward_book->guid,
-	'text' => "commit",
-	'confirm' => "make transaction from this book.",
-	'is_trusted' => true,
-	'class' => 'float-alt',
-));
+if ($reward_book->method == 'bankaccount') {
+	$metadata .= elgg_view('output/confirmlink', array(
+		'href' => "action/reward_book/commit?guid=" . $reward_book->guid,
+		'text' => "commit",
+		'confirm' => "make transaction from this book.",
+		'is_trusted' => true,
+		'class' => 'float-alt',
+	));
+}
 
 
 

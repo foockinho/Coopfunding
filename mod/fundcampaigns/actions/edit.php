@@ -48,10 +48,10 @@ if ($fundcampaign_guid = (int)get_input('fundcampaign_guid')) {
 
 	//MODERATION PLUGIN INTERCEPTION____________________________________
 	$input['access_id'] = (int)get_input('vis', '', false);
-	if (elgg_is_active_plugin('moderation')) {
-		elgg_load_library('elgg:moderation'); 
-		$forward_url = do_moderation_save ($fundcampaign, $input);	
-		elgg_clear_sticky_form('projects');
+	$params = array ('entity'=> $fundcampaign, 'input' => $input); 
+	if (elgg_is_active_plugin('moderation')) {	
+		$forward_url = elgg_trigger_plugin_hook('moderation:save', 'entity', $params);
+		elgg_clear_sticky_form('fundcampaigns');
 		forward($forward_url);	
 	}
 	//_____________________________________MODERATION PLUGIN INTERCEPTION

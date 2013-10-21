@@ -67,8 +67,6 @@ function campaign_reward_page_handler($page) {
 	if (!isset($page[0])) {
 		forward('', '404');
 	}
-
-    elgg_set_page_owner_guid($page[1]);
     
 	$page_type = $page[0];
 	switch ($page_type) {
@@ -86,7 +84,7 @@ function campaign_reward_page_handler($page) {
 			break;
 		case 'books':
 			gatekeeper();
-			$params = campaign_reward_get_page_content_books();
+			$params = campaign_reward_get_page_content_books($page[1]);
 			break;
 		default:
 			return false;
@@ -189,13 +187,13 @@ function campaign_reward_save ($hook, $type, $returnvalue, $params){
 		
 		$non_default_reward = $params['reward_guid'] > 0;
 		if ($non_default_reward){
-			var_dump("<br> start>campaign_reward_save> params"); var_dump($params); 
+			
 			list($is_stocked) = campaign_reward_is_stocked ($params['reward_guid']);
-			var_dump("es verdadero: " . $is_stocked); 
+			
 			if ($is_stocked) {
 				remove_entity_relationships($params['transaction_guid'], "reward");	
 				$relation = add_entity_relationship ($params['transaction_guid'], 'reward', $params['reward_guid']);
-				var_dump("<br> start>campaign_reward_save> relation"); var_dump($relation);
+			
 			} else {
 				register_error(elgg_echo('reward:stock_run_out_while saving'));	
 				forward(REFERER);
@@ -233,7 +231,7 @@ function campaign_reward_do_books ($hook, $type, $returnvalue, $params){
 		$book->contributor =$params['user_guid'];				
 		$book->save();
 		add_entity_relationship ($book->guid, 'reward', $params['reward_guid']);
-		var_dump("Do book with: " . $book->guid . " and " . $params['reward_guid']); 
+		
 	}else {
 		register_error(elgg_echo('reward:stock_insuficient_nothing_booked'));	
 	}

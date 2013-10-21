@@ -141,7 +141,8 @@ if (elgg_is_admin_logged_in() || $entity->state!="request") {
 	echo elgg_view('input/submit', array('value' => elgg_echo('save')));
 }
 
-if ($entity) {
+$showDeleteButton = elgg_is_active_plugin ("moderation") && elgg_is_admin_logged_in();
+if ($entity && $showDeleteButton) {
 	if (elgg_is_admin_logged_in()) {
 		$delete_url = 'action/projects/delete?guid=' . $entity->getGUID();
 		echo elgg_view('output/confirmlink', array(

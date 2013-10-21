@@ -5,6 +5,15 @@
  */
 
  $language = array(
+	
+	'campaign_reward:rewards' => 'Rewards',
+
+	'campaign_reward:books:view all' => 'View all reward books',
+	'campaign_reward:reward_books' => 'Reward books',
+	'campaign_reward:books' => 'Reward books',
+
+	'campaign_reward:reward_book:success' => 'The book has been commited in a new transaction.',	
+	
 	'campaign_reward:items' => 'Individual reward',
 	'campaign_reward:view all' => 'View all rewards',
 	'campaign_reward:addreward' => 'Add new reward',
@@ -16,6 +25,8 @@
 
 	'campaign_reward:edit' => 'Edit reward',
 	'campaign_reward:add' => 'Add reward',
+	'campaign_reward:saved' => 'Reward saved',
+	'campaign_reward:deleted' => 'Reward deleted',
 
 	'campaign_reward:error:item_not_found' => 'Reward not found',
 	'campaign_reward:error:cannot_write_to_container' => 'Cannto write the reward in the project',

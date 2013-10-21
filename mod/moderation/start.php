@@ -3,10 +3,8 @@
 elgg_register_event_handler('init', 'system', 'moderation_init');
 
 function moderation_init() {
-
 	//Register library
 	elgg_register_library('elgg:moderation', elgg_get_plugins_path() . 'moderation/lib/moderation.php');
-
 
 	//Register actions
 	$action_base = elgg_get_plugins_path() . 'moderation/actions';
@@ -16,7 +14,7 @@ function moderation_init() {
 	
 	// Set up the menu
 	if (elgg_is_admin_logged_in()) {
-		$item = new ElggMenuItem('moderation', elgg_echo('moderation'), 'moderation/main');
+		$item = new ElggMenuItem('moderation', elgg_echo('moderation:moderation'), 'moderation/main');
 		elgg_register_menu_item('site', $item);
 	}
 
@@ -24,14 +22,10 @@ function moderation_init() {
 	elgg_register_page_handler('moderation', 'moderation_page_handler');
 	
 	// Register plugin hooks
-	elgg_register_plugin_hook_handler('projects:moderation:save', 'entity', 'moderation_do_save');
-
-        /*elgg_register_plugin_hook_handler('permissions_check', 'group', 'projects_permissions_hook');
-        elgg_register_plugin_hook_handler('container_permissions_check', 'group', 'projects_container_permissions_hook');*/
-
+	elgg_register_plugin_hook_handler('moderation:save', 'entity', 'moderation_do_save');
+     
 	//Css
 	elgg_extend_view('css/elgg', 'moderation/css');
-
 }
 
 
@@ -40,7 +34,7 @@ function moderation_page_handler($page) {
 	elgg_load_library('elgg:moderation');	
 
 	moderator_gate_keeper();
-	elgg_push_breadcrumb(elgg_echo('moderation'), "moderation/main");
+	elgg_push_breadcrumb(elgg_echo('moderation:moderation'), "moderation/main");
 
 	switch ($page[0]) {
 
@@ -62,7 +56,7 @@ function moderation_handle_main_page() {
 
 	elgg_push_breadcrumb($title);
 
-	$content = elgg_echo('moderation:manage:new petitions'). "<br>";
+	$content = "<h3>" . elgg_echo('moderation:manage:new petitions') . "</h3><br>";
 	
 	$list = elgg_list_entities_from_metadata(array(
 	    'type' => 'group',
@@ -73,12 +67,12 @@ function moderation_handle_main_page() {
 	));
 	
 	if (!$list) {
-		$list = elgg_echo('moderation:nonewpetitions') . "<br>";
+		$list = elgg_echo('moderation:manage:nonewpetitions') . "<br>";
 	}
 
 	$content .= $list;
 	
-	$content .= elgg_echo('moderation:manage:revision') . "<br>";
+	$content .= "<br><h3>" . elgg_echo('moderation:manage:revision') . "</h3><br>";
 
 	$list= elgg_list_entities_from_metadata(array(
 	    'type' => 'object',
@@ -89,7 +83,7 @@ function moderation_handle_main_page() {
 	));
 
 	if (!$list) {
-		$list = elgg_echo('moderation:manage:none');
+		$list = elgg_echo('moderation:manage:norevisions');
 	}
 	$content .= $list;
 
@@ -106,6 +100,8 @@ function moderation_handle_main_page() {
 }
 
 function moderation_do_save ($hook, $type, $returnvalue, $params) {
+
+	elgg_load_library('elgg:moderation');	
 
 	$entity = $params['entity'];
 	$input = $params['input'];

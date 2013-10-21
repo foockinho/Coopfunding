@@ -84,8 +84,10 @@ function campaign_reward_get_page_content_edit($page, $guid = NULL) {
 
 			$body_vars = campaign_reward_prepare_form_vars($campaign_reward, $guid);
 
-			elgg_push_breadcrumb($campaign_reward->title, $campaign_reward->getURL());
-			elgg_push_breadcrumb(elgg_echo('edit'));
+			$fundcampaign = get_entity($campaign_reward->container_guid);
+			elgg_push_breadcrumb($fundcampaign->alias, $fundcampaign->getURL());
+			elgg_push_breadcrumb(elgg_echo('campaign_reward:rewards', "campaign_reward/owner/{$fundcampaign->guid}"));
+			elgg_push_breadcrumb($campaign_reward->title);
 
 			$content = elgg_view_form('campaign_reward/save', $vars, $body_vars);
 		} else {
@@ -106,23 +108,27 @@ function campaign_reward_get_page_content_edit($page, $guid = NULL) {
 	return $return;
 }
 
-function campaign_reward_get_page_content_books () {
+function campaign_reward_get_page_content_books ($guid) {
 
     $params = array();
 
     $params['filter_context'] = 'mine';
 
+	$fundcampaign = get_entity($guid);
 	$options = array(	
 		'type' => 'object',
 		'subtype' => 'reward_book',		
+		'container_guid' => $entity->container_guid,
 		'full_view' => false,
 		'no_results' => elgg_echo('fundraising:notbookmarks'),
 	);
 
 	$title = elgg_echo('campaign_reward:reward_books');
 	$content = elgg_list_entities_from_metadata($options);
-   
-  	elgg_push_breadcrumb(elgg_echo("campaign_reward:books"));
+   		
+	elgg_push_breadcrumb($fundcampaign->alias, $fundcampaign->getURL());
+	elgg_push_breadcrumb(elgg_echo("campaign_reward:books"));
+  	
 		
     $params['title'] = $title;
     $params['content'] = $content;
@@ -185,23 +191,18 @@ function campaign_reward_is_stocked ($reward_guid, $accept_zero_value = 'NO') {
 
 	$reward = get_entity($reward_guid);
 	
-	if ($reward) {
-	
-var_dump("campaign_reward_is_stocked reward_guid: " . $reward_guid . "<br>");
+	if ($reward) {	
+
 		$adjudicated_rewards =  get_entity_relationships ($reward_guid, "YES");
 		$adjudicated = sizeof($adjudicated_rewards);
-var_dump($adjudicated_rewards);
-var_dump("campaign_reward_is_stocked assigned: " . (int)$adjudicated . "<br>"); 
-var_dump("campaign_reward_is_stocked stock: " . (int)$reward->stock . "<br>"); 
+
 		$left = (int)$reward->stock - (int)$adjudicated;
-var_dump("campaign_reward_is_stocked left: " . $left . "<br>"); 
+
 		if ($accept_zero_value == 'NO') {
 			return array ($left > 0, $left);
 		} else {
 			return array ($left >= 0, $left);
 		}
-
-
 	
 	} else {
 		return false;
@@ -213,8 +214,6 @@ var_dump("campaign_reward_is_stocked left: " . $left . "<br>");
 Search first relation kind 'reward' of $guid and returns the other $guid
 */
 function campaign_reward_get_reward_or_transaction ($guid) {
-
-//var_dump("campaign_reward_get_reward_of_transaction transaction_guid: " . $transaction_guid . "<br>");
 
 	$relations = get_entity_relationships ($guid);
 	foreach ($relations as $relation) {
@@ -246,10 +245,9 @@ function campaign_reward_get_selector ($params){
 		'order_by_metadata' => array('name' => 'amount', 'direction' => 'ASC', 'as' => 'integer')
 	));
 
-
 	//Selected values	
 	$selected_reward_guid = campaign_reward_get_reward_or_transaction ($params['transaction_guid']);	
-var_dump("campaign_reward_get_selector selected_reward_guid: " . $selected_reward_guid . "<br>"); 
+
 	//Fill dropdown options
 	$options = array();
 	if ($rewards) {

@@ -56,10 +56,7 @@ if (($difference > 0) && ($timestamp > $contributions_set->timestamp)) {
 	$contributions_set->btc_amount = $balance;
 	$entity->btc_amount += $difference;
 
-	if ($reward_guid) {
-		$params = array('guid' => $guid, 'amount' => $amount, 'reward_guid' => $reward_guid);
-		elgg_trigger_plugin_hook('fundraising_payment',  'paid',  $params);	
-	}
+	
 }
 elgg_set_ignore_access($ia);
 

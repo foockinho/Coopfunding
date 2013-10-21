@@ -48,7 +48,7 @@ if ($project_guid = (int)get_input('project_guid')) {
 	$input['access_id'] = (int)get_input('vis', '', false);
 	$params = array ('entity'=> $project, 'input' => $input); 
 	if (elgg_is_active_plugin('moderation')) {		
-		$forward_url = elgg_trigger_plugin_hook('projects:moderation:save', 'entity', $params);
+		$forward_url = elgg_trigger_plugin_hook('moderation:save', 'entity', $params);
 		elgg_clear_sticky_form('projects');
 		forward($forward_url);	
 	}

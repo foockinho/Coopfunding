@@ -17,7 +17,8 @@ $reward_guid = (int) get_input('reward_guid');
 
 if (!$amount) {$amount=0;}
 
-$commit_date  = date(get_input('commit_date'));
+$inputdate = strptime(get_input('commit_date'), '%Y-%m-%d');
+$commit_date = mktime(0, 0, 0, $inputdate['tm_mon']+1, $inputdate['tm_mday'], $inputdate['tm_year']+1900);
 
 if ($contributor) {
     
@@ -76,7 +77,7 @@ if ($contributor) {
 		//If active plug in and has change campaign_reward, call save.
 		if (elgg_is_active_plugin("campaign_reward")) {	
 			$params = array('transaction_guid' => $transaction->guid, 'reward_guid' => $reward_guid);		
-var_dump("action_save>bankaccount> params "); var_dump($params); 
+
 			elgg_trigger_plugin_hook('fundraising:rewards:save', 'campaign_reward', $params);	
 		}
     }

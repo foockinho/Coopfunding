@@ -17,7 +17,7 @@ if ($moderate) {
 }
 ?>
 
-?>
+
 <div>
 	<label><?php echo elgg_echo("fundcampaigns:icon"); ?></label><br />
 	<?php echo elgg_view("input/file", array('name' => 'icon')); ?>
@@ -58,7 +58,7 @@ if ($moderate) {
 </div>
 <?php
 
-$fundcampaign_profile_fields = elgg_get_config('fundcampaign');
+$fundcampaign_profile_fields = elgg_get_config('fundcampaigns');
 if ($fundcampaign_profile_fields > 0) {
 	foreach ($fundcampaign_profile_fields as $shortname => $valtype) {
 		$line_break = '<br />';
@@ -171,7 +171,8 @@ if ($entity) {
 
 echo elgg_view('input/submit', array('value' => elgg_echo('save')));
 
-if ($entity) {
+$showDeleteButton = elgg_is_active_plugin ("moderation") && elgg_is_admin_logged_in();
+if ($entity && $showDeleteButton) {
 	$delete_url = 'action/fundcampaigns/delete?guid=' . $entity->getGUID();
 	echo elgg_view('output/confirmlink', array(
 		'text' => elgg_echo('fundcampaigns:delete'),

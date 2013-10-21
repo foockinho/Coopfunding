@@ -18,6 +18,7 @@ function fundraising_init() {
 
 	elgg_register_library('coopfunding:fundraising', elgg_get_plugins_path() . 'fundraising/lib/fundraising.php');
 	elgg_register_page_handler('fundraising', 'fundraising_page_handler');
+
     elgg_register_plugin_hook_handler('fundcampaigns:sidebarmenus', 'fundcampaign', 'fundraising_set_side_bar_menu');
 	elgg_register_action('fundraising/contribute', dirname(__FILE__) . '/actions/contribute.php');
 }
@@ -105,7 +106,7 @@ function fundraising_view_transactions ($guid) {
     	$params['filter'] = false;
         $content = elgg_list_entities_from_metadata($options);
        
-		elgg_push_breadcrumb(elgg_echo("{$container->alias}"), "{$container->getSubtype()}/{$container->alias}");
+		elgg_push_breadcrumb(elgg_echo("{$container->alias}"), $container->getURL());
 		
 	    $params['title'] = $title;
 	    $params['content'] = $content;

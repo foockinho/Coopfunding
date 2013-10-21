@@ -6,8 +6,8 @@
  * @subpackage Fundraising.Bitcoin
  */
 
-function fundraising_contribute_bitcoin($guid, $amount) {
-	forward(elgg_get_site_url() . "fundraising/bitcoin/contribute/$guid&amount=$amount");
+function fundraising_contribute_bitcoin($guid, $amount, $reward_guid = null) {
+	forward(elgg_get_site_url() . "fundraising/bitcoin/contribute/$guid&amount=$amount&reward_guid=$reward_guid");
 }
 
 function fundraising_bitcoin_get_address($entity_guid, $user_guid = null) {

@@ -32,11 +32,10 @@ function fundraising_bankaccount_managedeposits_get_page_content_list($guid = NU
 		
 		$return['title'] = elgg_echo('fundraising:bankaccount:transactions', array($container->name));
 
-		$crumbs_title = $container->alias;
-		elgg_push_breadcrumb(elgg_echo("fundraising:bankaccount"), "fundraising/bankaccount/managedeposits");
-		elgg_push_breadcrumb($container->alias, "{$container->subtype}/{$container->alias}");
+		elgg_push_breadcrumb(elgg_echo("fundraising:bankaccount"));
+		elgg_push_breadcrumb($container->alias, $container->getURL());
 
-        	$return['filter'] = false;
+       	$return['filter'] = false;
 
 	} else {
 		return false;

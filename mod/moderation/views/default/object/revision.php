@@ -14,7 +14,7 @@ $icon = elgg_view_entity_icon($entity, 'tiny');
 $delete_url = "action/{$entity->getSubtype()}s/delete?guid={$entity->getGUID()}";
 $metadata =  elgg_view('output/confirmlink', array(
 		'href' => $delete_url,
-		'confirm' => elgg_echo("{$entity->getSubtype}s:deletewarning"),
+		'confirm' => elgg_echo("moderation:deletewarning"),
 		'class' => 'elgg-icon elgg-icon-delete float-alt',
 	));
 if (elgg_in_context('owner_block') || elgg_in_context('widgets')) {

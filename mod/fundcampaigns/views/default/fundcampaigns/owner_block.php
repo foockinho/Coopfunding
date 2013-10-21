@@ -1,5 +1,5 @@
 <?php
-var_dump("owner_block_de fundcampaign"); exit();
+
 $fundcampaign = $vars['entity'];
 
 $title = elgg_view('output/url', array(

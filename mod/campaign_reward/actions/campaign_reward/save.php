@@ -100,7 +100,7 @@ if (!$error) {
 		// remove sticky form entries
 		elgg_clear_sticky_form('campaign_reward');
 
-		system_message(elgg_echo('campaign_reward:message:saved'));
+		system_message(elgg_echo('campaign_reward:saved'));
         $url =  elgg_get_site_url() . "campaign_reward/owner/{$campaign_reward->container_guid}";     
 		forward($url);
 		

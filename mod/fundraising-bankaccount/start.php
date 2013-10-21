@@ -44,8 +44,7 @@ function fundraising_bankaccount_page_handler($page) {
                 }
                
     		    elgg_load_library("elgg:{$entities_text}");
-    		    
-    			elgg_push_breadcrumb(elgg_echo("{$entities_text}"), "{$entities_text}/all");
+    		        			
     			elgg_set_page_owner_guid($entity->guid);
     			
     	       	switch ($page[1]) {

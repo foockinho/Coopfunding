@@ -112,8 +112,11 @@ function do_moderation_user_save($entity, $input) {
 	$revision->state = 'in_progress';
 	$revision->save();
 
-	system_message(elgg_echo("{$entity_type}:saved_request_revision"));
+	system_message(elgg_echo("moderation:revision_saved_user"));
+
+	
 	return $entity->getUrl();
+
 
 }
 
@@ -145,7 +148,7 @@ function do_moderation_admin_save($entity, $input) {
 	$entity->access_id = $input['access_id'];
 	$entity->save();
 	
-	system_message(elgg_echo("{$entity_type}:saved_request_commit"));
+	system_message(elgg_echo("moderation:revision_saved"));
 	return 'moderation/main';
 
 }
@@ -189,7 +192,7 @@ function moderation_get_request_user_button ($guid) {
 	if ($entity->state == "in_progress") {
 		$request_url = 'action/moderation/request?guid=' . $guid;
 		return elgg_view('output/confirmlink', array(
-			'text' => elgg_echo('projects:request'),
+			'text' => elgg_echo('moderation:request'),
 			'href' => $request_url,
 			'confirm' => elgg_echo('moderation:requestwarning'),
 			'class' => 'elgg-button elgg-button-save float-alt',

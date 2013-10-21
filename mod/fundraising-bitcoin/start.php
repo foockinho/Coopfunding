@@ -43,7 +43,7 @@ function fundraising_bitcoin_page_handler($page) {
 
 				if (elgg_is_active_plugin("campaign_reward") && get_input('reward_guid') && $entity->getSubtype = 'fundcampaign' ) {	
 						$params = array(
-							'user_guid' => elgg_logged_in_user_entity()->guid, 
+							'user_guid' => elgg_get_logged_in_user_guid(),
 							'fundcampaign_guid' => $entity->guid, 
 							'reward_guid' => get_input('reward_guid'),
 							'amount' => get_input('amount'),

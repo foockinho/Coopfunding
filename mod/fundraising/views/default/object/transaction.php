@@ -36,15 +36,15 @@ $owner_link = elgg_view('output/url', array(
 	'is_trusted' => true,
 ));
 $author_text = elgg_echo('byline', array($owner_link));
-$date = $transaction->commit_date;
+$date = elgg_view_friendly_time ($transaction->commit_date);
 
 if (elgg_is_active_plugin("campaign_reward")) {
 	
     elgg_load_library('elgg:campaign_reward');	
 	$reward_guid = campaign_reward_get_reward_or_transaction($transaction->guid);	
-var_dump("se busca ". $transaction->guid . ">>>" . $reward_guid);
+
 	$reward = get_entity($reward_guid);
-	var_dump($transaction->guid);
+
 	if ($reward) {
 		$reward_title = $reward->title;	
 	} else {
