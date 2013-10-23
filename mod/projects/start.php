@@ -24,7 +24,7 @@ function projects_init() {
 		'medium' => array('w' => 640, 'h' => 360),
 		'large' => array('w' => 720, 'h' => 405),
 	));
-	
+
 	// register project entities for search
 	// @todo register projects subtype
 	elgg_register_entity_type('group');
@@ -65,14 +65,15 @@ function projects_init() {
 	// add project activity tool option
 	add_group_tool_option('activity', elgg_echo('projects:enableactivity'), true);
 	elgg_extend_view('projects/tool_latest', 'projects/profile/activity_module');
+	elgg_extend_view('projects/campaigns', 'projects/profile/campaigns_module');
 
 	// add link to owner block
 	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'projects_activity_owner_block_menu');
 
 	// project entity menu
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'projects_entity_menu_setup');
-	
-	// project user hover menu	
+
+	// project user hover menu
 	elgg_register_plugin_hook_handler('register', 'menu:user_hover', 'projects_user_entity_menu_setup');
 
 	// delete and edit annotations for topic replies
@@ -101,7 +102,7 @@ function projects_init() {
 
 	// Register a handler for delete projects
 	elgg_register_event_handler('delete', 'group', 'projects_delete_event_listener');
-	
+
 	elgg_register_event_handler('join', 'group', 'projects_user_join_event_listener');
 	elgg_register_event_handler('leave', 'group', 'projects_user_leave_event_listener');
 	elgg_register_event_handler('pagesetup', 'system', 'projects_setup_sidebar_menus');
@@ -129,7 +130,7 @@ function projects_fields_setup() {
 		'geolocation' => 'text',
 		'paymethodBAN' => 'text',
 		'paymethodCES' => 'text'
-		
+
 	);
 
 	$profile_defaults = elgg_trigger_plugin_hook('profile:fields', 'project', NULL, $profile_defaults);
@@ -234,7 +235,7 @@ function projects_setup_sidebar_menus() {
  * @return bool
  */
 function projects_page_handler($page, $handler) {
-	
+
 	elgg_load_library('elgg:projects');
 
 	if (!isset($page[0])) {
@@ -246,26 +247,26 @@ function projects_page_handler($page, $handler) {
 		$page[1] = $page[0]; // Alias
 		$page[0] = 'profile';
 	}
-	
+
 	$project_guid = projects_get_from_alias($page[1])->guid;
 
 	elgg_push_breadcrumb(elgg_echo('projects'), "projects/all");
 
 	switch ($page[0]) {
 		case 'all':
-			projects_register_toggle();			
+			projects_register_toggle();
 			projects_handle_all_page();
 			break;
 		case 'search':
-			projects_register_toggle();					
+			projects_register_toggle();
 			projects_search_page();
 			break;
 		case 'owner':
-			projects_register_toggle();			
+			projects_register_toggle();
 			projects_handle_owned_page();
 			break;
 		case 'member':
-			projects_register_toggle();			
+			projects_register_toggle();
 			set_input('username', $page[1]);
 			projects_handle_mine_page();
 			break;
@@ -439,14 +440,14 @@ function projects_entity_menu_setup($hook, $type, $return, $params) {
 function projects_user_entity_menu_setup($hook, $type, $return, $params) {
 	if (elgg_is_logged_in()) {
 		$project = elgg_get_page_owner_entity();
-		
+
 		// Check for valid project
 		if (!elgg_instanceof($project, 'group', 'project')) {
 			return $return;
 		}
-	
+
 		$entity = $params['entity'];
-		
+
 		// Make sure we have a user and that user is a member of the project
 		if (!elgg_instanceof($entity, 'user') || !$project->isMember($entity)) {
 			return $return;
@@ -465,7 +466,7 @@ function projects_user_entity_menu_setup($hook, $type, $return, $params) {
 				'priority' => 999,
 			);
 			$return[] = ElggMenuItem::factory($options);
-		} 
+		}
 	}
 
 	return $return;
@@ -590,7 +591,7 @@ function projects_user_join_event_listener($event, $object_type, $object) {
 	$user = $object['user'];
 	$acl = $project->group_acl;
 
-	if (elgg_instanceof($project, 'group', 'project')) {	
+	if (elgg_instanceof($project, 'group', 'project')) {
 		add_user_to_access_collection($user->guid, $acl);
 	}
 	return true;
@@ -666,7 +667,7 @@ function projects_join_project($project, $user) {
 	$ia = elgg_set_ignore_access(TRUE);
 	$result = $project->join($user);
 	elgg_set_ignore_access($ia);
-	
+
 	if ($result) {
 		// flush user's access info so the collection is added
 		get_access_list($user->guid, 0, true);
@@ -734,7 +735,7 @@ function projects_register_toggle() {
 		$list_type = "gallery";
 		$icon = elgg_view_icon('grid');
 	} else {
-		$list_type = "list";		
+		$list_type = "list";
 		$icon = elgg_view_icon('list');
 	}
 
