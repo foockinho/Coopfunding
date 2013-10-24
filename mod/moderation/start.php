@@ -3,6 +3,7 @@
 elgg_register_event_handler('init', 'system', 'moderation_init');
 
 function moderation_init() {
+
 	//Register library
 	elgg_register_library('elgg:moderation', elgg_get_plugins_path() . 'moderation/lib/moderation.php');
 
@@ -58,9 +59,7 @@ function moderation_handle_main_page() {
 
 	$content = "<h3>" . elgg_echo('moderation:manage:new petitions') . "</h3><br>";
 	
-	$list = elgg_list_entities_from_metadata(array(
-	    'type' => 'group',
-	    'subtype' => 'project', 
+	$list = elgg_list_entities_from_metadata(array(	    
 	    'metadata_name' => 'state',
 	    'metadata_value' => 'request', 
 	    'full_view' => false

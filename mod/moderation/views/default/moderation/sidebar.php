@@ -10,7 +10,8 @@ if (elgg_is_admin_logged_in() && elgg_is_active_plugin('projects-contact')) {
 
 $body = $contact_link . "<br />";
 
-$revisions = get_moderation_revisions();
+elgg_load_library("elgg:moderation");
+$revisions = get_moderation_revisions($params['entity']);
 foreach ($revisions as $revision) {
 	$body .= "<b>" . $revision->guid . "</b>". "<br />";
 	$body .= "created: " .elgg_get_friendly_time($revision->time_created) . "<br />";
