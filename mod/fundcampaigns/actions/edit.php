@@ -46,14 +46,16 @@ if ($fundcampaign_guid = (int)get_input('fundcampaign_guid')) {
 		forward(REFERER);
 	}
 
-	//MODERATION PLUGIN INTERCEPTION____________________________________
+	//MODERATION PLUGIN INTERCEPTION____________________________________	
 	$input['access_id'] = (int)get_input('vis', '', false);
-	$params = array ('entity'=> $fundcampaign, 'input' => $input); 
-	if (elgg_is_active_plugin('moderation')) {	
-		$forward_url = elgg_trigger_plugin_hook('moderation:save', 'entity', $params);
-		elgg_clear_sticky_form('fundcampaigns');
-		forward($forward_url);	
-	}
+	if ($fundcampaign->state != "in_progress") {
+		$params = array ('entity'=> $fundcampaign, 'input' => $input); 
+		if (elgg_is_active_plugin('moderation')) {	
+			$forward_url = elgg_trigger_plugin_hook('moderation:save', 'entity', $params);
+			elgg_clear_sticky_form('fundcampaigns');
+			forward($forward_url);	
+		}
+	}	
 	//_____________________________________MODERATION PLUGIN INTERCEPTION
 } else {
 	$fundcampaign = new ElggObject();
@@ -179,82 +181,93 @@ if ($fundcampaign->access_id != $visibility) {
 
 $fundcampaign->save();
 
-// fundcampaign saved so clear sticky form
-elgg_clear_sticky_form('fundcampaigns');
 
-$has_uploaded_icon = (!empty($_FILES['icon']['type']) && substr_count($_FILES['icon']['type'], 'image/'));
+//MODERATION PLUGIN INTERCEPTION____________________________________
+//If it is new but never moderated, didn't trigger moderation edit hook, for icon save.
+if (elgg_is_active_plugin("moderation")) {
 
-if ($has_uploaded_icon) {
+	elgg_load_library ("elgg:moderation");
+	moderation_save_icon($fundcampaign, "fundcampaigns", "new", null);
+//_____________________________________MODERATION PLUGIN INTERCEPTION
 
-	elgg_load_library('elgg:fundcampaigns');
 
-	$icon_sizes = elgg_get_config('fundcampaigns_icon_sizes');
+} else {
 
-	$prefix = "fundcampaigns/" . $fundcampaign->guid;
-
-	$filehandler = new ElggFile();
-	$filehandler->owner_guid = $fundcampaign->owner_guid;
-	$filehandler->setFilename($prefix . ".jpg");
-	$filehandler->open("write");
-	$filehandler->write(get_uploaded_file('icon'));
-	$filehandler->close();
-	$filename = $filehandler->getFilenameOnFilestore();
-
-	$sizes = array('tiny', 'small', 'medium', 'large');
-
-	$thumbs = array();
-	foreach ($sizes as $size) {
-		$thumbs[$size] = fundcampaigns_get_resized_and_cropped_image_from_existing_file(
-			$filename,
-			$icon_sizes[$size]['wf'],
-			$icon_sizes[$size]['hf']
-		);
-
-	}
-
-	if ($thumbs['tiny']) { // just checking if resize successful
-		$thumb = new ElggFile();
-		$thumb->owner_guid = $fundcampaign->owner_guid;
-		$thumb->setMimeType('image/jpeg');
-
-		foreach ($sizes as $size) {
-			$thumb->setFilename("{$prefix}{$size}.jpg");
-			$thumb->open("write");
-			$thumb->write($thumbs[$size]);
-			$thumb->close();
-		}
-
-		$fundcampaign->icontime = time();
-	}
-
-}
-
-// @todo Remove this when #4683 fixed
-if ($must_move_icons) {
-
-	$filehandler = new ElggFile();
-	$filehandler->setFilename('fundcampaigns');
-	$filehandler->owner_guid = $old_owner_guid;
-	$old_path = $filehandler->getFilenameOnFilestore();
-
-	$sizes = array('', 'tiny', 'small', 'medium', 'large');
+	$has_uploaded_icon = (!empty($_FILES['icon']['type']) && substr_count($_FILES['icon']['type'], 'image/'));
 
 	if ($has_uploaded_icon) {
-		// delete those under old owner
-		foreach ($sizes as $size) {
-			unlink("$old_path/{$fundcampaign_guid}{$size}.jpg");
-		}
-	} else {
-		// move existing to new owner
-		$filehandler->owner_guid = $fundcampaign->owner_guid;
-		$new_path = $filehandler->getFilenameOnFilestore();
 
+		elgg_load_library('elgg:fundcampaigns');
+
+		$icon_sizes = elgg_get_config('fundcampaigns_icon_sizes');
+
+		$prefix = "fundcampaigns/" . $fundcampaign->guid;
+
+		$filehandler = new ElggFile();
+		$filehandler->owner_guid = $fundcampaign->owner_guid;
+		$filehandler->setFilename($prefix . ".jpg");
+		$filehandler->open("write");
+		$filehandler->write(get_uploaded_file('icon'));
+		$filehandler->close();
+		$filename = $filehandler->getFilenameOnFilestore();
+
+		$sizes = array('tiny', 'small', 'medium', 'large');
+
+		$thumbs = array();
 		foreach ($sizes as $size) {
-			rename("$old_path/{$fundcampaign_guid}{$size}.jpg", "$new_path/{$fundcampaign_guid}{$size}.jpg");
+			$thumbs[$size] = fundcampaigns_get_resized_and_cropped_image_from_existing_file(
+				$filename,
+				$icon_sizes[$size]['w'],
+				$icon_sizes[$size]['h']
+			);
+
+		}
+
+		if ($thumbs['tiny']) { // just checking if resize successful
+			$thumb = new ElggFile();
+			$thumb->owner_guid = $fundcampaign->owner_guid;
+			$thumb->setMimeType('image/jpeg');
+
+			foreach ($sizes as $size) {
+				$thumb->setFilename("{$prefix}{$size}.jpg");
+				$thumb->open("write");
+				$thumb->write($thumbs[$size]);
+				$thumb->close();
+			}
+
+			$fundcampaign->icontime = time();
+		}
+
+	}
+
+	// @todo Remove this when #4683 fixed
+	if ($must_move_icons) {
+
+		$filehandler = new ElggFile();
+		$filehandler->setFilename('fundcampaigns');
+		$filehandler->owner_guid = $old_owner_guid;
+		$old_path = $filehandler->getFilenameOnFilestore();
+
+		$sizes = array('', 'tiny', 'small', 'medium', 'large');
+
+		if ($has_uploaded_icon) {
+			// delete those under old owner
+			foreach ($sizes as $size) {
+				unlink("$old_path/{$fundcampaign_guid}{$size}.jpg");
+			}
+		} else {
+			// move existing to new owner
+			$filehandler->owner_guid = $fundcampaign->owner_guid;
+			$new_path = $filehandler->getFilenameOnFilestore();
+
+			foreach ($sizes as $size) {
+				rename("$old_path/{$fundcampaign_guid}{$size}.jpg", "$new_path/{$fundcampaign_guid}{$size}.jpg");
+			}
 		}
 	}
 }
-
+// fundcampaign saved so clear sticky form
+elgg_clear_sticky_form('fundcampaigns');
 system_message(elgg_echo("fundcampaigns:saved"));
 
 forward($fundcampaign->getURL());

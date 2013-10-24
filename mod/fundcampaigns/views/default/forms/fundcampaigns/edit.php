@@ -14,13 +14,20 @@ $moderate = elgg_is_active_plugin('moderation');
 if ($moderate) {
 	elgg_load_library('elgg:moderation');	
 	$revision = get_moderation_last_revision($entity);	
+	if ($revision &&  $revision->icontime) {
+		$is_ico_changed = $revision->icontime != $entity->icontime;
+	}	
 }
 ?>
 
 
 <div>
 	<label><?php echo elgg_echo("fundcampaigns:icon"); ?></label><br />
-	<?php echo elgg_view("input/file", array('name' => 'icon')); ?>
+	<?php echo elgg_view("input/file", array('name' => 'icon'));
+		if ($moderate && $is_ico_changed) {		
+			echo moderation_get_field_icon ($entity, $revision);
+		}
+ 	?>
 </div>
 <div>
 	<?php

@@ -18,10 +18,10 @@ function fundcampaigns_init() {
 	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'fundcampaigns_block_menu');
 
 	elgg_set_config('fundcampaigns_icon_sizes', array(
-		'tiny' => array('wf' => 50, 'hf' => 50),
-		'small' => array('wf' => 50, 'hf' => 50),
-		'medium' => array('wf' => 640, 'hf' => 360),
-		'large' => array('wf' => 720, 'hf' => 405),
+		'tiny' => array('w' => 50, 'h' => 50),
+		'small' => array('w' => 50, 'h' => 50),
+		'medium' => array('w' => 640, 'h' => 360),
+		'large' => array('w' => 720, 'h' => 405),
 	));
 
 	$root = dirname(__FILE__);

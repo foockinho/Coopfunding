@@ -8,17 +8,41 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . "/engine/start.php");
 
-$fundcampaign_guid = get_input('fundcampaign_guid');
+$input_guid = get_input('fundcampaign_guid');
+
+if (elgg_is_active_plugin("moderation")){
+	
+	$codes = split('revision', $input_guid);
+
+	if ($codes) {
+		$fundcampaign_guid = $codes[0];
+		$revision_guid = $codes[1];
+		$revision = get_entity($revision_guid);
+	}
+}
+
+$fundcampaign = get_entity($fundcampaign_guid);
+
+if ($revision) {
+	$icontime = $revision->icontime;
+	$guid = $revision_guid;
+	$filename = $input_guid;	
+} else{
+	$icontime = $fundcampaign->icontime;
+	$guid = $fundcampaign->guid;	
+	$filename = $fundcampaign->guid;	
+}
+
+$etag = $icontime . $guid;
+
 
 /* @var ElggObject $fundcampaign */
-$fundcampaign = get_entity($fundcampaign_guid);
 if (!($fundcampaign instanceof ElggObject)) {
 	header("HTTP/1.1 404 Not Found");
 	exit;
 }
 
 // If is the same ETag, content didn't changed.
-$etag = $fundcampaign->icontime . $fundcampaign_guid;
 if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == "\"$etag\"") {
 	header("HTTP/1.1 304 Not Modified");
 	exit;
@@ -32,7 +56,7 @@ $success = false;
 
 $filehandler = new ElggFile();
 $filehandler->owner_guid = $fundcampaign->owner_guid;
-$filehandler->setFilename("fundcampaigns/" . $fundcampaign->guid . $size . ".jpg");
+$filehandler->setFilename("fundcampaigns/" . $filename . $size . ".jpg");
 
 $success = false;
 if ($filehandler->open("read")) {

@@ -8,17 +8,41 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . "/engine/start.php");
 
-$project_guid = get_input('project_guid');
+$input_guid = get_input('project_guid');
+
+if (elgg_is_active_plugin("moderation")){
+	
+	$codes = split('revision', $input_guid);
+
+	if ($codes) {
+		$project_guid = $codes[0];
+		$revision_guid = $codes[1];
+		$revision = get_entity($revision_guid);
+	}
+}
+
+$project = get_entity($project_guid);
+
+if ($revision) {
+	$icontime = $revision->icontime;
+	$guid = $revision_guid;
+	$filename = $input_guid;	
+} else{
+	$icontime = $project->icontime;
+	$guid = $project->guid;	
+	$filename = $project->guid;	
+}
+
+$etag = $icontime . $guid;
 
 /* @var ElggGroup $project */
-$project = get_entity($project_guid);
 if (!($project instanceof ElggGroup)) {
 	header("HTTP/1.1 404 Not Found");
 	exit;
 }
 
 // If is the same ETag, content didn't changed.
-$etag = $project->icontime . $project_guid;
+
 if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == "\"$etag\"") {
 	header("HTTP/1.1 304 Not Modified");
 	exit;
@@ -32,9 +56,8 @@ $success = false;
 
 $filehandler = new ElggFile();
 $filehandler->owner_guid = $project->owner_guid;
-$filehandler->setFilename("projects/" . $project->guid . $size . ".jpg");
+$filehandler->setFilename("projects/" . $filename . $size . ".jpg");
 
-$success = false;
 if ($filehandler->open("read")) {
 	if ($contents = $filehandler->read($filehandler->size())) {
 		$success = true;
@@ -52,4 +75,7 @@ header("Pragma: public");
 header("Cache-Control: public");
 header("Content-Length: " . strlen($contents));
 header("ETag: \"$etag\"");
+
 echo $contents;
+
+
