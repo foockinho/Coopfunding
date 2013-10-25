@@ -63,7 +63,15 @@ function projects_init() {
 	elgg_register_widget_type('a_users_projects', elgg_echo('projects:widget:membership'), elgg_echo('projects:widgets:description'));
 	
 	elgg_extend_view('projects/campaigns', 'projects/profile/campaigns_module');
-	elgg_extend_view('projects/blogs', 'blog/group_module');
+	if (elgg_is_active_plugin("blog")) {
+		elgg_extend_view('projects/blogs', 'blog/group_module');
+	}
+	if (elgg_is_active_plugin("campaign_reward")) {
+		elgg_extend_view('projects/campaign_rewards', 'campaign_reward/rewards_module');
+	}
+	if (elgg_is_active_plugin("fundraising")) {
+		elgg_extend_view('projects/contribute', 'fundraising/contribute_module');
+	}
 	
 	// add link to owner block
 	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'projects_activity_owner_block_menu');

@@ -9,7 +9,13 @@
 echo '<ul id="projects-tools" class="elgg-gallery elgg-gallery-fluid mtl clearfix">';
 
 echo elgg_view("projects/campaigns", $vars);
-echo elgg_view("projects/blogs", $vars);
+if (elgg_is_active_plugin("blog")){ echo elgg_view("projects/blogs", $vars);}
+if (elgg_is_active_plugin("campaign_reward")){ 	
+	echo elgg_view("projects/campaign_rewards", $vars);
+}
+if (elgg_is_active_plugin("fundraising")) {	
+	echo elgg_view("projects/contribute", $vars);	
+}
 
 echo "</ul>";
 

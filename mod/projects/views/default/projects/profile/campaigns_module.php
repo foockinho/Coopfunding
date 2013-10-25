@@ -22,11 +22,7 @@ if (!$fundcampaign) {
 	$content = elgg_view('fundcampaigns/profile/gallery', array (
 				'entity' => $fundcampaign
 			));
-	$content .=  elgg_trigger_plugin_hook('fundcampaigns:sidebarmenus', 'fundcampaign', $fundcampaign);
-	
 }
-
-
 
 echo elgg_view('projects/profile/module', array(
 	'title' => elgg_echo('fundcampaigns:campaigns'),
