@@ -26,7 +26,7 @@ $content = elgg_list_entities_from_metadata($options);
 elgg_pop_context();
 
 $new_link = elgg_view('output/url', array(
-	'href' => "blog/add/$$project->guid",
+	'href' => "blog/add/$project->guid",
 	'text' => elgg_echo('blog:write'),
 	'is_trusted' => true,
 ));
