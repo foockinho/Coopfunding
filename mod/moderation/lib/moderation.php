@@ -99,10 +99,6 @@ function do_moderation_user_save($entity, $input) {
 	
 	//save changed fields		
 	foreach($input as $shortname => $value) {
-		echo (" field: [" . $shortname . "]");
-		echo (" project [" . $entity ->$shortname . "]");
-		echo (" value: [" . $value . "]");
-
 		if ($entity->$shortname != $value ) {				
 			$revision->$shortname = $value;
 			
@@ -127,10 +123,6 @@ function do_moderation_admin_save($entity, $input) {
 
 	//save changed fields		
 	foreach($input as $shortname => $value) {
-		echo (" field: [" . $shortname . "]");
-		echo (" project [" . $entity ->$shortname . "]");
-		echo (" value: [" . $value . "]");
-
 		if ($entity->$shortname != $value ) {				
 			$entity->$shortname = $value;		
 		}			
