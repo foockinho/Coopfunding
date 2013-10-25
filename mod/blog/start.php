@@ -213,9 +213,9 @@ function blog_entity_menu_setup($hook, $type, $return, $params) {
 	if (elgg_in_context('widgets')) {
 		return $return;
 	}
-
+	
 	$entity = $params['entity'];
-	$handler = elgg_extract('handler', $params, false);
+	$handler = elgg_extract('handler', array($params), false);
 	if ($handler != 'blog') {
 		return $return;
 	}

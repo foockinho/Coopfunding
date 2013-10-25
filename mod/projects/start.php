@@ -61,12 +61,10 @@ function projects_init() {
 
 	// Add some widgets
 	elgg_register_widget_type('a_users_projects', elgg_echo('projects:widget:membership'), elgg_echo('projects:widgets:description'));
-
-	// add project activity tool option
-	add_group_tool_option('activity', elgg_echo('projects:enableactivity'), true);
-	elgg_extend_view('projects/tool_latest', 'projects/profile/activity_module');
+	
 	elgg_extend_view('projects/campaigns', 'projects/profile/campaigns_module');
-
+	elgg_extend_view('projects/blogs', 'blog/group_module');
+	
 	// add link to owner block
 	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'projects_activity_owner_block_menu');
 

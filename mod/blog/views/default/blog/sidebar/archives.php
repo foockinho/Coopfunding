@@ -6,6 +6,10 @@
 $loggedin_user = elgg_get_logged_in_user_entity();
 $page_owner = elgg_get_page_owner_entity();
 
+if (!$page_owner) {
+	var_dump($vars);exit();
+}
+
 if (elgg_instanceof($page_owner, 'user')) {
 	$url_segment = 'blog/archive/' . $page_owner->username;
 } else {
