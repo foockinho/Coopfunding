@@ -12,11 +12,11 @@ extract($vars, EXTR_IF_EXISTS);
 
 $moderate = elgg_is_active_plugin('moderation');
 if ($moderate) {
-	elgg_load_library('elgg:moderation');	
-	$revision = get_moderation_last_revision($entity);	
+	elgg_load_library('elgg:moderation');
+	$revision = moderation_get_last_revision($entity);
 	if ($revision &&  $revision->icontime) {
 		$is_ico_changed = $revision->icontime != $entity->icontime;
-	}	
+	}
 }
 ?>
 
@@ -24,7 +24,7 @@ if ($moderate) {
 <div>
 	<label><?php echo elgg_echo("fundcampaigns:icon"); ?></label><br />
 	<?php echo elgg_view("input/file", array('name' => 'icon'));
-		if ($moderate && $is_ico_changed) {		
+		if ($moderate && $is_ico_changed) {
 			echo moderation_get_field_icon ($entity, $revision);
 		}
  	?>
@@ -88,10 +88,11 @@ if ($fundcampaign_profile_fields > 0) {
 	}
 }
 
-if ($entity && !$entity->is_active) {
-    $entity->is_active = "YES";
+if ($entity && $entity->is_active) {
+	$is_active = "YES";
+}else{
+	$is_active = "NO";
 }
-    
 $active_options = array(
 		YES => elgg_echo('fundcampaigns:active'),
 		NO => elgg_echo("fundcampaigns:inactive")
@@ -196,8 +197,8 @@ if ($entity) {
 			echo moderation_get_request_admin_button ($entity->getGUID());
 		}else {
 			echo moderation_get_request_user_button ($entity->getGUID());
-		}		
-	}	
+		}
+	}
 }
 ?>
 </div>

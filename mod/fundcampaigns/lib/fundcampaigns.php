@@ -199,7 +199,7 @@ function fundcampaigns_get_resized_and_cropped_image_from_existing_file($input_n
 function fundcampaigns_is_active_campaign ($fundcampaign) {
 
 	$date = date('Y-m-d');
-	return $fundcampaign->is_active == "YES" && $date > $fundcampaign->start_date;
+	return $fundcampaign->is_active && $date > $fundcampaign->start_date;
 }
 
 function fundcampaigns_get_active_campaign ($guid = 0) {
