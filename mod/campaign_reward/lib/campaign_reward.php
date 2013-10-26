@@ -1,11 +1,5 @@
 <?php
 /**
- * Individual returns helper functions
- *
- * @package campaign_reward
- */
-
-/**
  * Get page components to list all indvidual rewards
  *
  * @param int $container_guid The GUID of the fundcampaign
@@ -110,14 +104,14 @@ function campaign_reward_get_page_content_edit($page, $guid = NULL) {
 
 function campaign_reward_get_page_content_books ($guid) {
 
-    $params = array();
+    	$params = array();
 
-    $params['filter_context'] = 'mine';
+    	$params['filter_context'] = 'mine';
 
 	$fundcampaign = get_entity($guid);
-	$options = array(	
+	$options = array(
 		'type' => 'object',
-		'subtype' => 'reward_book',		
+		'subtype' => 'reward_book',
 		'container_guid' => $entity->container_guid,
 		'full_view' => false,
 		'no_results' => elgg_echo('fundraising:notbookmarks'),
@@ -125,17 +119,14 @@ function campaign_reward_get_page_content_books ($guid) {
 
 	$title = elgg_echo('campaign_reward:reward_books');
 	$content = elgg_list_entities_from_metadata($options);
-   		
+
 	elgg_push_breadcrumb($fundcampaign->alias, $fundcampaign->getURL());
 	elgg_push_breadcrumb(elgg_echo("campaign_reward:books"));
-  	
-		
-    $params['title'] = $title;
-    $params['content'] = $content;
+
+    	$params['title'] = $title;
+    	$params['content'] = $content;
 	$params['filter'] = "";
-		
 	return $params;
-	
 }
 
 /**
@@ -170,7 +161,7 @@ function campaign_reward_prepare_form_vars($campaign_reward = NULL, $container_g
 		foreach ($sticky_values as $key => $value) {
 			$values[$key] = $value;
 		}
-	}	
+	}
 
 	elgg_clear_sticky_form('campaign_reward');
 
@@ -182,17 +173,16 @@ function campaign_reward_prepare_form_vars($campaign_reward = NULL, $container_g
 
 
 /**
-return boolean, wether this $reward_guid->stock will be exceed if we add another relationship. $Left will be written with count of relationship.
-return int, stock - count of relationship;
-
-in $accept_zero_value = 'NO' => restrict $left to 0 or not.
+* return boolean, wether this $reward_guid->stock will be exceed if we add another relationship. $Left will be written with count of relationship.
+* return int, stock - count of relationship;
+*
+* in $accept_zero_value = 'NO' => restrict $left to 0 or not.
 **/
 function campaign_reward_is_stocked ($reward_guid, $accept_zero_value = 'NO') {
 
 	$reward = get_entity($reward_guid);
-	
-	if ($reward) {	
 
+	if ($reward) {
 		$adjudicated_rewards =  get_entity_relationships ($reward_guid, "YES");
 		$adjudicated = sizeof($adjudicated_rewards);
 
@@ -203,16 +193,14 @@ function campaign_reward_is_stocked ($reward_guid, $accept_zero_value = 'NO') {
 		} else {
 			return array ($left >= 0, $left);
 		}
-	
 	} else {
 		return false;
 	}
-
 }
 
-/*
-Search first relation kind 'reward' of $guid and returns the other $guid
-*/
+/**
+* Search first relation kind 'reward' of $guid and returns the other $guid
+**/
 function campaign_reward_get_reward_or_transaction ($guid) {
 
 	$relations = get_entity_relationships ($guid);
@@ -228,9 +216,9 @@ function campaign_reward_get_reward_or_transaction ($guid) {
 	return 0;
 }
 
-/*
-Search first book kind 'reward' of user and entity
-*/
+/**
+* Search first book kind 'reward' of user and entity
+**/
 function campaign_reward_get_reward_book ($book_search_code) {
 
 	$books = elgg_get_entities_from_metadata (array (
@@ -239,12 +227,12 @@ function campaign_reward_get_reward_book ($book_search_code) {
 		'metadataname' => 'search_code',
 		'metadatavalue' => $book_search_code
 		));
-	
+
 	if ($books) {
 		if (sizeof($books) != 1) {
 			return null; //TODO must validate with user and container_guid to find the book,
 		} else {
-			return $books[1];
+			return $books[0];
 		}
 	}
 	return null;
@@ -252,13 +240,13 @@ function campaign_reward_get_reward_book ($book_search_code) {
 
 
 /**
-gets a output block {label:select} with all campaign_reward of $params['fundcampaign_guid'], and, if transaction is supported, then selects in the dropdown.
-
-$params['fundcampaign_guid']
-$params['transaction_guid']
+* gets a output block {label:select} with all campaign_reward of $params['fundcampaign_guid'], and, if transaction is supported, then selects in the dropdown.
+*
+* $params['fundcampaign_guid']
+* $params['transaction_guid']
 **/
 function campaign_reward_get_selector ($params){
-	
+
 	//Get reward list of this campaign
 	$rewards = elgg_get_entities_from_metadata(array(
 		'type' => 'object',
@@ -267,19 +255,17 @@ function campaign_reward_get_selector ($params){
 		'order_by_metadata' => array('name' => 'amount', 'direction' => 'ASC', 'as' => 'integer')
 	));
 
-	//Selected values	
-	$selected_reward_guid = campaign_reward_get_reward_or_transaction ($params['transaction_guid']);	
+	//Selected values
+	$selected_reward_guid = campaign_reward_get_reward_or_transaction ($params['transaction_guid']);
 
 	//Fill dropdown options
 	$options = array();
 	if ($rewards) {
-
 		//none option
-		$options[0] = elgg_echo('campaign_reward:select_none');			
+		$options[0] = elgg_echo('campaign_reward:select_none');
 
 		//For each reward...
 		foreach ($rewards as $reward){
-
 			//Get reward stock
 			list($is_stocked, $left) = campaign_reward_is_stocked ($reward->guid, 'YES');
 
@@ -287,31 +273,29 @@ function campaign_reward_get_selector ($params){
 			if ($is_stocked)	{
 				$left_text = " / ". elgg_echo('campaign_reward:left') . " " . $left;
 				$amount_text = elgg_echo('campaign_reward:amount€') . " " . $reward->amount;
-				$options[$reward->guid] = $reward-> title . " " . $amount_text . $left_text;			
+				$options[$reward->guid] = $reward-> title . " " . $amount_text . $left_text;
 			}
-				
 		}
-	}	
+	}
 
 	//Display input item
-	$select = elgg_view("input/dropdown", array("name" => "reward_guid", "options_values" => $options, "value" => $selected_reward_guid));	
+	$select = elgg_view("input/dropdown", array("name" => "reward_guid", "options_values" => $options, "value" => $selected_reward_guid));
 
 	//Display selector
  	$output = "<div><label>" . elgg_echo('campaign_reward:reward') . "</label><br>" . $select . "</div>";
 
 	return  $output;
-		
 }
 
-/*
-
-Returns boolean, wether changing reward's stock to $new_stock could conflict with already adjudicated to transactions.
-Return int, missing number of rewards that should be conflict.
-
-*/
+/**
+*
+* Returns boolean, wether changing reward's stock to $new_stock could conflict with already adjudicated to transactions.
+* Return int, missing number of rewards that should be conflict.
+*
+**/
 function campaign_reward_can_change_stock($reward_guid, $new_stock) {
 
-	$reward = get_entity ($reward_guid);	
+	$reward = get_entity ($reward_guid);
 
 	if ( $reward->stock == $new_stock) {
 		return array(true);
@@ -320,7 +304,6 @@ function campaign_reward_can_change_stock($reward_guid, $new_stock) {
 		$missing = $reward->stock - $left;
 		return array($new_stock >= $missing, $missing);
 	}
-
 }
 
 
