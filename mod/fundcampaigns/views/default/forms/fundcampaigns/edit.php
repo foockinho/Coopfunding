@@ -193,9 +193,7 @@ if ($entity && $showDeleteButton) {
 //Moderation user button to request publish the project
 if ($entity) {
 	if (elgg_is_active_plugin("moderation")) {
-		if (elgg_is_admin_logged_in()) {
-			echo moderation_get_request_admin_button ($entity->getGUID());
-		}else {
+		if (!elgg_is_admin_logged_in()) {
 			echo moderation_get_request_user_button ($entity->getGUID());
 		}
 	}
