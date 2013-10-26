@@ -112,7 +112,6 @@ function moderation_do_user_save($entity, $input) {
 		}
 	}
 
-
 	$revision->state = 'in_progress';
 	$revision->save();
 
@@ -137,19 +136,17 @@ function moderation_do_admin_save($entity, $input) {
 		if ($entity->$shortname != $value ) {
 			$entity->$shortname = $value;
 		}
-	}
+	}	
 
-	//fetch entity current revision
 	$revision = moderation_get_last_revision($entity);
+
+	$entity_type = $entity->getSubtype() ."s";	
+	moderation_save_icon($entity, $entity_type, "commit", $revision, get_input('discard_icon')=="on");
 
 	if ($revision) {
 		$revision->state = 'commited';
 		$revision->save();
 	}
-
-	$entity_type = $entity->getSubtype() ."s";
-	moderation_save_icon($entity, $entity_type, "commit", $revision);
-
 	$entity->state = 'commited';
 	$entity->access_id = $input['access_id'];
 	$entity->save();
@@ -207,7 +204,6 @@ function moderation_get_field_icon ($entity, $revision) {
 	);
 	$output = elgg_view('output/img', $img_params);
 
-
 	$filename = "{$entity->getSubtype()}icon/{$entity->guid}revision{$revision->guid}/medium/{$revision->icontime}.jpg";
 	$img_params = array(
 			'src' => $filename,
@@ -216,8 +212,12 @@ function moderation_get_field_icon ($entity, $revision) {
 	);
 	$output .= elgg_view('output/img', $img_params);
 
-	$output .= elgg_view('output/checkbox', array('name'=> elgg_echo("moderation:stash"));
-
+	if (elgg_is_admin_logged_in()){
+		$output .= elgg_echo("moderation:stash");
+		$output .= elgg_view('input/checkbox', array(							
+						'name' => 'discard_icon',
+					));
+	}
 	return $output;
 }
 
@@ -254,9 +254,11 @@ $save_revision:
 			DESACTIVATED: delete if exists {$entity_guid}'revision{$revision_guid}.jpg';
 		else
 			copy {$entity_guid}revision{$revision_guid}.jpg' to {$entity_guid}.jpg
+$discard_icon:
+	Admin do not allow change icon to revision one.
 
 */
-function moderation_save_icon ($entity, $entity_type, $save_revision, $revision) {
+function moderation_save_icon ($entity, $entity_type, $save_revision, $revision, $discard_icon = false) {
 
 	$has_uploaded_icon = (!empty($_FILES['icon']['type']) && substr_count($_FILES['icon']['type'], 'image/'));
 
@@ -277,9 +279,14 @@ function moderation_save_icon ($entity, $entity_type, $save_revision, $revision)
 					$entity->icontime = time();
 					//$prefix_to_del = "{$entity_type}/" . $entity->guid . "revision{$revision}";
 				} else {
-					$prefix_copy_to = "{$entity_type}/{$entity->guid}";
-					$prefix_copy_from = "{$entity_type}/{$entity->guid}revision{$revision->guid}";
-					$entity->icontime = time();
+				
+					if ($discard_icon) {
+						$prefix_to_del = "{$entity_type}/{$entity->guid}revision{$revision->guid}";	
+					}else {
+						$prefix_copy_to = "{$entity_type}/{$entity->guid}";
+						$prefix_copy_from = "{$entity_type}/{$entity->guid}revision{$revision->guid}";
+						$entity->icontime = time();						
+					}
 				}
 				break;
 			default:
@@ -323,7 +330,6 @@ function moderation_save_icon ($entity, $entity_type, $save_revision, $revision)
 			}
 		}
 
-
 		if ($prefix_copy_from) {
 			$sizes = array('', 'tiny', 'small', 'medium', 'large');
 			foreach ($sizes as $size) {
@@ -342,20 +348,17 @@ function moderation_save_icon ($entity, $entity_type, $save_revision, $revision)
 			}
 		}
 
-		/*
 		if ($prefix_to_del) {
 			$filehandler = new ElggFile();
 			$filehandler->setFilename($prefix_to_del);
 			if ($filehandler->open("read")) {
 				$path = $filehandler->getFilenameOnFilestore();
-
 				$sizes = array('', 'tiny', 'small', 'medium', 'large');
 				foreach ($sizes as $size) {
-					unlink("$path/{$entity_guid}revision{$revision}{$size}.jpg");
+					unlink("$path/{$prefix_to_del}{$size}.jpg");
 				}
 			}
-		}
-		*/
+		}		
 	}
 	return true;
 }
