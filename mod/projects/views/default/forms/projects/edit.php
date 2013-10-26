@@ -13,7 +13,7 @@ extract($vars, EXTR_IF_EXISTS);
 $moderate = elgg_is_active_plugin('moderation');
 if ($moderate) {
 	elgg_load_library('elgg:moderation');	
-	$revision = get_moderation_last_revision($entity);	
+	$revision = moderation_get_last_revision($entity);	
 	if ($revision &&  $revision->icontime) {
 		$is_ico_changed = $revision->icontime != $entity->icontime;
 	}	
@@ -168,14 +168,10 @@ if ($entity && $showDeleteButton) {
 //Moderation user button to request publish the project
 if ($entity) {
 	if (elgg_is_active_plugin("moderation")) {
-		if (elgg_is_admin_logged_in()) {
-			echo moderation_get_request_admin_button ($entity->getGUID());
-		}else {
-			echo moderation_get_request_user_button ($entity->getGUID());
-		}		
+		if (!elgg_is_admin_logged_in()) {
+			echo moderation_get_request_user_button ($entity->getGUID());		
+		}
 	}	
 }
 ?>
-
-
 </div>
