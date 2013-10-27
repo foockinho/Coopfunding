@@ -28,10 +28,11 @@ if (!$fundcampaign) {
 		'limit'=> 5
 	));
 
-	$url = elgg_get_site_url() . "campaign_reward/owner/{$fundcampaign->guid}";
-	$content = "<a href=" .  $url . ">" . elgg_echo('campaign_reward:view all') . "</a> <br>";
-	$url = elgg_get_site_url() . "campaign_reward/books/{$fundcampaign->guid}";
-	$content .= "<a href=" .  $url . ">" . elgg_echo('campaign_reward:books:view all') . "</a>";
+	if (elgg_is_admin_logged_in()){
+		$url = elgg_get_site_url() . "campaign_reward/books/{$fundcampaign->guid}";
+		$content .= "<a href=" .  $url . ">" . elgg_echo('campaign_reward:books:view all') . "</a>";
+	}
+
 	$content .= "<ul>";
 
 	if ($entities) {

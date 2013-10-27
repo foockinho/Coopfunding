@@ -133,16 +133,22 @@ function campaign_reward_set_add_button ($hook, $entity_type, $return_value, $pa
 
 
 function campaign_reward_set_add_button_func ($guid) {
+	
+	$project = get_entity ($guid->container_guid);
+	
+	if ($project && $project->isMember()) {
 
-        $text = elgg_echo("campaign_reward:addreward");
-        $url = elgg_get_site_url() . "campaign_reward/add/{$guid}";
+		$text = elgg_echo("campaign_reward:addreward");
+		$url = elgg_get_site_url() . "campaign_reward/add/{$guid}";
 
-    	elgg_register_menu_item('title', array(
-				'name' => $text,
-				'href' => $url,
-				'text' => elgg_echo($text),
-				'link_class' => 'elgg-button elgg-button-action',
-			));
+	    	elgg_register_menu_item('title', array(
+					'name' => $text,
+					'href' => $url,
+					'text' => elgg_echo($text),
+					'link_class' => 'elgg-button elgg-button-action',
+				));
+	}
+
         return false;
 }
 
@@ -239,7 +245,7 @@ function campaign_reward_do_books ($hook, $type, $returnvalue, $params){
 		$book->type = 'object';
 		$book->subtype = 'reward_book';
 		$book->owner_guid = $params['user_guid'];
-		$book->container_guid = $params['fundcampaign_guid'];
+		$book->fundcampaign_guid = $params['fundcampaign_guid'];
 
 		$book->amount = $params['amount'];
 		$book->method = $params['method'];				

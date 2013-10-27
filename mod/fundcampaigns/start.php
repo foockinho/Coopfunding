@@ -209,7 +209,7 @@ function fundcampaigns_handle_view_page($guid) {
 
 	fundcampaigns_register_profile_buttons($fundcampaign);
 
-	if (fundcampaigns_is_active_campaign ($fundcampaign)) {
+	if (fundcampaigns_is_active_campaign ($fundcampaign) ) {
 	    elgg_trigger_plugin_hook('fundcampaigns:profilebuttons', 'fundcampaign', $fundcampaign, array('entity' => $fundcampaign));
 	}
 

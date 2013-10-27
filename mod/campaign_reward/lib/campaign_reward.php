@@ -2,7 +2,6 @@
 /**
  * Get page components to list all indvidual rewards
  *
- * @param int $container_guid The GUID of the fundcampaign
  * @return array
  */
 function campaign_reward_get_page_content_list($guid = NULL) {
@@ -112,7 +111,8 @@ function campaign_reward_get_page_content_books ($guid) {
 	$options = array(
 		'type' => 'object',
 		'subtype' => 'reward_book',
-		'container_guid' => $entity->container_guid,
+		'metadataname' => 'fundcampaign_guid',
+		'metadatavalue' => $guid,
 		'full_view' => false,
 		'no_results' => elgg_echo('fundraising:notbookmarks'),
 	);

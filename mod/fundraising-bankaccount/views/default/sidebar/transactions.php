@@ -11,6 +11,8 @@ if ($entity) {
 		$isMember = $project->isMember();		
 	}
 
+	//Can member edit transactions, just see??
+	$isMember = false;	
 	if (elgg_is_admin_logged_in() || $isMember) {
 
 		elgg_load_library('coopfunding:fundraising');

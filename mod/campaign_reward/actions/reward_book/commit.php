@@ -8,16 +8,16 @@ if (!$rewardbook) {forward('', '404');}
 elgg_load_library('elgg:campaign_reward');
 $reward_guid = campaign_reward_get_reward_or_transaction ($rewardbook_guid);  
 
-$entity = get_entity($rewardbook->container_guid);
+$entity = get_entity($rewardbook->fundcampaign_guid);
 
 elgg_load_library('coopfunding:fundraising');
-$contributions_set = fundraising_get_contributions_set($rewardbook->container_guid, $rewardbook->contributor);
+$contributions_set = fundraising_get_contributions_set($rewardbook->fundcampaign_guid, $rewardbook->contributor);
 
 if (!$contributions_set) {
 	$contributions_set = new ElggObject();
 	$contributions_set->subtype = "contributions_set";
 	$contributions_set->owner_guid = $rewardbook->contributor;
-	$contributions_set->container_guid = $rewardbook->container_guid;
+	$contributions_set->container_guid = $rewardbook->fundcampaign_guid;
 }
 
 if ($contributions_set_guid = $contributions_set->save()) {
@@ -28,7 +28,7 @@ if ($contributions_set_guid = $contributions_set->save()) {
 	$transaction->method = $rewardbook->method;
    
 	$transaction->owner_guid = elgg_get_logged_in_user_guid();
-	$transaction->container_guid = $rewardbook->container_guid;
+	$transaction->container_guid = $rewardbook->fundcampaign_guid;
 
 	$transaction->eur_amount = $rewardbook->amount;
 	
