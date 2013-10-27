@@ -25,11 +25,11 @@ function fundraising_bankaccount_managedeposits_get_page_content_list($guid = NU
 		'metadata_value' => 'bankaccount',
 		'no_results' => elgg_echo('fundraising:bankaccount:notransactions'),
 	);
-   
+
 	if ($guid) {
 		$options['container_guid'] = $guid;
 		$container = get_entity($guid);
-		
+
 		$return['title'] = elgg_echo('fundraising:bankaccount:transactions', array($container->name));
 
 		elgg_push_breadcrumb(elgg_echo("fundraising:bankaccount"));
@@ -41,7 +41,7 @@ function fundraising_bankaccount_managedeposits_get_page_content_list($guid = NU
 		return false;
 	}
  	$content = elgg_list_entities_from_metadata($options);
-  
+ 
 	$return['title'] = $title;
 	$return['content'] = $content;
 
@@ -62,8 +62,8 @@ function fundraising_bankaccount_get_page_content_edit($page, $guid = NULL) {
 	$sidebar = '';
 	if ($page == 'edit') {
 		$transaction = get_entity($guid);
-        $container = get_entity($transaction->container_guid);
-        
+        	$container = get_entity($transaction->container_guid);
+
 		$title = elgg_echo('fundraising:bankaccount:editdeposit');
 
 		if (elgg_instanceof($transaction, 'object', 'transaction') && $transaction->canEdit()) {
@@ -90,11 +90,11 @@ function fundraising_bankaccount_get_page_content_edit($page, $guid = NULL) {
 	$return['title'] = $title;
 	$return['content'] = $content;
 	$return['sidebar'] = $sidebar;
-	
+
 	return $return;
 }
 function fundraising_bankaccount_get_transaction_code ($entity_guid, $user_guid) {
-	return $entity_guid . "-" . $user_guid;	
+	return $entity_guid . "-" . $user_guid;
 }
 
 function fundraising_bankaccount_prepare_form_vars($transaction = NULL, $container_guid = NULL) {

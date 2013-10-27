@@ -53,18 +53,15 @@ function moderation_register_toggle() {
 function moderation_get_last_revision($entity) {
 
 	if ($entity) {
-		$revisions = elgg_get_entities_from_metadata( array(
+		return current(elgg_get_entities_from_metadata( array(
 			'type' => 'object',
 			'subtype' => 'revision',
 			'container_guid' => $entity->guid,
 			'metadata_name' => 'state',
 			'metadata_value' => 'in_progress',
-			));
-		if($revisions) {
-			return $revisions[0];
-		}
+			'limit' => 1
+			)));		
 	}
-
 	return null;
 }
 
@@ -132,9 +129,19 @@ function moderation_do_admin_save($entity, $input) {
 
 	$entity_type = $entity->getSubtype();
 
+	//If this fundcampaigns becames active, deselect other possible active fundcampaign.
+	if($entity_type == "fundcampaign" && $input['is_active'] && !$entity->is_active){
+		elgg_load_library("elgg:fundcampaigns");
+		$entity_old = fundcampaigns_get_active_campaign($entity->container_guid);
+		if ($entity_old) {
+        		$entity_old->is_active = false;
+        		$entity_old->save();
+    		}		
+	}
+
 	foreach($input as $shortname => $value) {
 		if ($entity->$shortname != $value ) {
-			$entity->$shortname = $value;
+			$entity->$shortname = $value;			
 		}
 	}	
 
@@ -142,7 +149,7 @@ function moderation_do_admin_save($entity, $input) {
 
 	$entity_type = $entity->getSubtype() ."s";	
 	moderation_save_icon($entity, $entity_type, "commit", $revision, get_input('discard_icon')=="on");
-
+	
 	if ($revision) {
 		$revision->state = 'commited';
 		$revision->save();
@@ -283,9 +290,11 @@ function moderation_save_icon ($entity, $entity_type, $save_revision, $revision,
 					if ($discard_icon) {
 						$prefix_to_del = "{$entity_type}/{$entity->guid}revision{$revision->guid}";	
 					}else {
-						$prefix_copy_to = "{$entity_type}/{$entity->guid}";
-						$prefix_copy_from = "{$entity_type}/{$entity->guid}revision{$revision->guid}";
-						$entity->icontime = time();						
+						if ($revision){
+							$prefix_copy_to = "{$entity_type}/{$entity->guid}";
+							$prefix_copy_from = "{$entity_type}/{$entity->guid}revision{$revision->guid}";
+							$entity->icontime = time();						
+						}
 					}
 				}
 				break;

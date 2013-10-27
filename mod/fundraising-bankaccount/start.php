@@ -12,16 +12,14 @@ function fundraising_bankaccount_init() {
 
 	elgg_register_library('coopfunding:fundraising:bankaccount', elgg_get_plugins_path() . 'fundraising-bankaccount/lib/fundraising-bankaccount.php');
 	
-    // register actions
+    	// register actions
 	elgg_register_action('transaction/save', dirname(__FILE__) . '/actions/save.php');
 	elgg_register_action('fundraising/bankaccount/delete', dirname(__FILE__) . '/actions/delete.php');
 	elgg_register_action('fundraising/bankaccount/bookreward', dirname(__FILE__) . '/actions/bookreward.php');
-    elgg_register_plugin_hook_handler('fundcampaigns:sidebarmenus', 'fundcampaign', 'fundraising_bankaccount_set_side_bar_menu');
+    	elgg_register_plugin_hook_handler('fundcampaigns:sidebarmenus', 'fundcampaign', 'fundraising_bankaccount_set_side_bar_menu');
 
-    fundraising_register_method('bankaccount');
-    fundraising_register_currency('eur');
-
-	
+    	fundraising_register_method('bankaccount');
+   	fundraising_register_currency('eur');	
 }
 
 function fundraising_bankaccount_page_handler($page) {
@@ -34,43 +32,45 @@ function fundraising_bankaccount_page_handler($page) {
 	        
 	        $entity = get_entity($page[2]);    
 	    
-	        if($entity) {
-    	        if (elgg_instanceof($entity, 'group', 'project')) {
-                    $entity_text = 'project';
-                    $entities_text = 'projects';
-                }else{
-                    $entity_text = 'fundcampaigns';
-                    $entities_text = 'fundcampaigns';
-                }
-               
-    		    elgg_load_library("elgg:{$entities_text}");
-    		        			
-    			elgg_set_page_owner_guid($entity->guid);
-    			
-    	       	switch ($page[1]) {
-            		case 'contribute':
-            			fundraising_bankaccount_contribute_page($entity);
-            			break;
-            		case 'managedeposits':
-            			fundraising_bankaccount_managedeposits_page($entity);
-            			break;	
-            		case 'add':
-            		    $params = fundraising_bankaccount_get_page_content_edit($page[1], $entity->guid);
-            			$body = elgg_view_layout('content', $params);
-	                    echo elgg_view_page($params['title'], $body);
-			            break;	
-            		case 'edit':
-            			$params = fundraising_bankaccount_get_page_content_edit($page[1], $entity->guid);
-            			$body = elgg_view_layout('content', $params);
-	                    echo elgg_view_page($params['title'], $body);
-			            break;	
-            		case 'bankaccount-callback':
-                        fundraising_bankaccount_confirm_page($entity);           
-                        break;
-            		default:
-            		    return false;
-            	}
-            	return true;
+	        if($entity) {		
+    			elgg_set_page_owner_guid($entity->guid);    			
+	    	       	switch ($page[1]) {
+		    		case 'contribute':
+		    			if (elgg_is_active_plugin("campaign_reward") && get_input('reward_guid') && $entity->getSubtype = 'fundcampaign' ) {	
+						$params = array(
+							'user_guid' => elgg_get_logged_in_user_entity()->guid,
+							'fundcampaign_guid' => $entity->guid, 
+							'reward_guid' => get_input('reward_guid'),
+							'amount' => get_input('amount'),
+							'method' => 'bankaccount',
+							'book_search_code' => fundraising_bankaccount_get_transaction_code($entity->guid, $user_guid) 
+						);		
+	
+						$books_text = elgg_trigger_plugin_hook('fundraising:transaction:do_books', 'do_books', $params);	
+					}	
+					forward($entity->getURL());
+		    			break;
+			
+		    		case 'managedeposits':
+		    			fundraising_bankaccount_managedeposits_page($entity);
+		    			break;	
+		    		case 'add':
+		    		    	$params = fundraising_bankaccount_get_page_content_edit($page[1], $entity->guid);
+		    			$body = elgg_view_layout('content', $params);
+			            	echo elgg_view_page($params['title'], $body);
+					break;	
+		    		case 'edit':
+		    			$params = fundraising_bankaccount_get_page_content_edit($page[1], $entity->guid);
+		    			$body = elgg_view_layout('content', $params);
+			            echo elgg_view_page($params['title'], $body);
+					    break;	
+		    		case 'bankaccount-callback':
+		                	fundraising_bankaccount_confirm_page($entity);           
+		                	break;
+		    		default:
+		    		    	return false;
+		    	}
+		    	return true;
             }
         }     
     	return true;
@@ -83,18 +83,7 @@ function fundraising_bankaccount_contribute_page ($entity) {
     
     elgg_push_breadcrumb(elgg_echo('fundraising:contribute'));
 	$user_guid = elgg_get_logged_in_user_entity()->guid;
-	if (elgg_is_active_plugin("campaign_reward") && get_input('reward_guid') && $entity->getSubtype = 'fundcampaign' ) {	
-			$params = array(
-				'user_guid' => $user_guid,
-				'fundcampaign_guid' => $entity->guid, 
-				'reward_guid' => get_input('reward_guid'),
-				'amount' => get_input('amount'),
-				'method' => 'bankaccount',
-				'book_search_code' => fundraising_bankaccount_get_transaction_code($entity->guid, $user_guid) //sign book with code to find when transaction commits
-			);		
 	
-			$books_text = elgg_trigger_plugin_hook('fundraising:transaction:do_books', 'do_books', $params);	
-	}
     
     $title = elgg_echo('fundraising:bankaccount:title', array($entity->name));
 	$content = elgg_view('fundraising/bankaccount/contribute', array(

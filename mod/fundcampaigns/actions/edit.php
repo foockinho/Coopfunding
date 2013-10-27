@@ -44,10 +44,12 @@ if ($fundcampaign_guid = (int)get_input('fundcampaign_guid')) {
 	if (!$fundcampaign->canEdit()) {
 		register_error(elgg_echo("fundcampaigns:cantedit"));
 		forward(REFERER);
-	}
+	}	
 
 	//MODERATION PLUGIN INTERCEPTION___________________________________
 	$input['access_id'] = (int)get_input('vis', '', false);
+	$input['is_active'] =  get_input('is_active');
+	
 	if ($fundcampaign->state != "in_progress") {
 		$params = array ('entity'=> $fundcampaign, 'input' => $input); 
 		if (elgg_is_active_plugin('moderation')) {	
@@ -61,7 +63,7 @@ if ($fundcampaign_guid = (int)get_input('fundcampaign_guid')) {
 	$fundcampaign = new ElggObject();
 	$fundcampaign->subtype = 'fundcampaign';
 	$is_new_fundcampaign = true;
-	$fundcampaign->state = "in_progress"; //__MODERATION PLUGIN INTERCEPTION
+	$fundcampaign->state = "in_progress"; //__MODERATION PLUGIN INTERCEPTION	
 }
 
 elgg_load_library('elgg:fundcampaigns');
@@ -153,16 +155,7 @@ if (!$is_new_fundcampaign && $new_owner_guid && $new_owner_guid != $old_owner_gu
 }
 
 
-if (get_input('is_active') == "YES"){
-    //get other active to make no active;
-    $entity = fundcampaigns_get_active_campaign($fundcampaign->container_guid);
-
-    if ($entity && $entity != $fundcampaign && $entity->is_active) {
-        $entity->is_active = false;
-        $entity->save();
-    }
-}
-$fundcampaign->is_active = get_input('is_active') == "YES";
+$fundcampaign->is_active = get_input('is_active');
 $fundcampaign->save();
 
 $must_move_icons = ($owner_has_changed && $old_icontime);

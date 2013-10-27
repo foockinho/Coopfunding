@@ -197,23 +197,19 @@ function fundcampaigns_get_resized_and_cropped_image_from_existing_file($input_n
 }
 
 function fundcampaigns_is_active_campaign ($fundcampaign) {
-
-	$date = date('Y-m-d');
+	$date = date('Y-m-d');	
 	return $fundcampaign->is_active && $date > $fundcampaign->start_date;
 }
 
 function fundcampaigns_get_active_campaign ($guid = 0) {
 
-    $entities = elgg_get_entities_from_metadata(array(
+	return current(elgg_get_entities_from_metadata(array(
 		'type' => 'object',
 		'subtype' => 'fundcampaign',
 		'container_guid' => $guid,
 		'metadata_name' => 'is_active',
-		'metadata_value' => 'YES',
+		'metadata_value' => true,
 		'limit' => 1,
-	));
-	if ($entities) {
-		return $entities[0];
-	}
-	return false;
+	)));
+	
 }

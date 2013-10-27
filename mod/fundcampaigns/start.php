@@ -61,7 +61,7 @@ function fundcampaigns_fields_setup() {
 		'periods_duration' => 'text', //By default= 40 days
 
 		'minimum_amount' => 'text', //%of total amount
-		'total_amount' => 'text', //%of total_amount
+		'total_amount' => 'text', //%of total_amount		
 		
 	    //end_date = start_date + [(periods_duratoin) + (iif(activate_period2, periods_duration, 0)]
 	);

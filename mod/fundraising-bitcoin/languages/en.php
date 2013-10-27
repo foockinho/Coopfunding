@@ -10,7 +10,7 @@ $language = array(
 	*/
 
 	'fundraising:bitcoin:title' => "Contribute with bitcoins to %s",
-	'fundraising:bitcoin:contributeToaddress' => "Send bitcoins to this address: %s",
+	'fundraising:bitcoin:contributeToaddress' => "Send bitcoins to this address: ",
 	'fundraising:bitcoin:contributeToQRcode' => "Scan this QRcode:",
 	'fundraising:bitcoin:contributeNoAddress' => "This entity is not configured to recieve bitcoins.",
 	'fundraising:bitcoin:or' => 'or',

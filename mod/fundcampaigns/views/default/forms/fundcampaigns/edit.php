@@ -88,19 +88,15 @@ if ($fundcampaign_profile_fields > 0) {
 	}
 }
 
-if ($entity && $entity->is_active) {
-	$is_active = "YES";
-}else{
-	$is_active = "NO";
-}
-$active_options = array(
-		YES => elgg_echo('fundcampaigns:active'),
-		NO => elgg_echo("fundcampaigns:inactive")
-);
+if (elgg_is_admin_logged_in()) {
+	$active_options = array(
+		true => elgg_echo('fundcampaigns:active'),
+		false => elgg_echo("fundcampaigns:inactive")
+	);
 ?>
 
-<div>
-	<label>
+	<div>
+		<label>
 			<?php echo elgg_echo('fundcampaigns:is_active'); ?><br />
 			<?php echo elgg_view('input/dropdown', array(
 				'name' => 'is_active',
@@ -108,12 +104,12 @@ $active_options = array(
 				'options_values' => $active_options,
 			));
 			?>
-	</label>
-</div>
+		</label>
+	</div>
 
 <?php
 
-if (elgg_is_admin_logged_in()) {
+
 	$access_options = array(
 		ACCESS_PRIVATE => elgg_echo('fundcampaigns:access:fundcampaign'),
 		ACCESS_PUBLIC => elgg_echo("PUBLIC")
@@ -122,13 +118,13 @@ if (elgg_is_admin_logged_in()) {
 
 <div>
 	<label>
-			<?php echo elgg_echo('fundcampaigns:visibility'); ?><br />
-			<?php echo elgg_view('input/access', array(
-				'name' => 'vis',
-				'value' =>  $vis,
-				'options_values' => $access_options,
-			));
-			?>
+		<?php echo elgg_echo('fundcampaigns:visibility'); ?><br />
+		<?php echo elgg_view('input/access', array(
+			'name' => 'vis',
+			'value' =>  $vis,
+			'options_values' => $access_options,
+		));
+		?>
 	</label>
 </div>
 

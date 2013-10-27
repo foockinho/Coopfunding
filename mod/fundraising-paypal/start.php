@@ -13,7 +13,7 @@ function fundraising_paypal_init() {
 	elgg_register_action('fundraising/paypal-callback', dirname(__FILE__) . '/actions/paypal-callback.php', "public");
 	elgg_register_plugin_hook_handler('fundraising', 'sum_amount', 'fundraising_paypal_sum_amount');
 	
-	elgg_register_library('coopfunding:fundraising', elgg_get_plugins_path() . 'fundraising/lib/fundraising.php');
+	elgg_load_library('coopfunding:fundraising');
 	fundraising_register_method('paypal');
 	fundraising_register_currency('eur');
 }

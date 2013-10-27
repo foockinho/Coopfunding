@@ -24,8 +24,8 @@ if ($fundcampaign) {
 		
 	if ($entities) {
 		foreach ($entities as $entity){
-
-		    if ($vars['donatebutton']) {
+			
+		    if ($fundcampaign->access_id == ACCESS_PUBLIC && $fundcampaign->is_active) {
 			$donatebuttons_link = fundraising_get_contribute_button ($fundcampaign->guid, $entity->amount, $entity->guid);			
 		    }
 		    $content.= "<li><div><b>" . $entity->title . "</b><br>" . $entity->description . $donatebuttons_link . "</div></li><br>";

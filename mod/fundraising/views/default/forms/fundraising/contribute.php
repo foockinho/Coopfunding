@@ -27,18 +27,36 @@ echo elgg_view('input/hidden', array(
 	'name' => 'reward_guid',
 	'value' => $vars['reward_guid'],
 ));
-foreach (fundraising_get_methods() as $method) {
-        echo elgg_view('input/submit', array(
-		'name' => 'method',
-                'value' => elgg_echo('fundraising:contribute:button:method', array($method)),
-	));
-}
-?>
-</div>
 
-<?php
+
 echo '<div>';
 echo elgg_echo("fundraising:message");
 echo '</div>';
 
+
+foreach (fundraising_get_methods() as $method) {
+
+	$url = "fundraising/{$method}";
+	elgg_extend_view($url, "fundraising-{$method}/contribute");
+	if (elgg_view_exists($url)){
+		$buttons .= elgg_view('input/button', array(
+			'name' => "fundraising_{$method}_contribute_button",
+			'id' => "fundraising_{$method}_contribute_button",
+	                'value' => elgg_echo('fundraising:contribute:button:method', array($method)),
+			'class' => "fundraising-{$method}-contribute-button"
+			));		
+		$forms .= elgg_view($url, $vars);	
+
+	} else {
+	        $buttons .= elgg_view('input/submit', array(
+			'name' => 'method',
+	                'value' => elgg_echo('fundraising:contribute:button:method', array($method)),
+		));
+	}
+}
+echo $buttons;
+echo $forms;	
 ?>
+</div>
+
+

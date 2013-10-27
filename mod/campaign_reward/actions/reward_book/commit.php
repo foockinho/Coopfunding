@@ -3,11 +3,12 @@
 $rewardbook_guid = get_input('guid');
 $rewardbook = get_entity($rewardbook_guid);
 
-elgg_load_library('elgg:campaign_reward');
-$reward_guid = campaign_reward_get_reward_or_transaction ($rewardbook_guid); //TODO Better name for this function, get_entity_relationship 
-
-
 if (!$rewardbook) {forward('', '404');}
+
+elgg_load_library('elgg:campaign_reward');
+$reward_guid = campaign_reward_get_reward_or_transaction ($rewardbook_guid);  
+
+$entity = get_entity($rewardbook->container_guid);
 
 elgg_load_library('coopfunding:fundraising');
 $contributions_set = fundraising_get_contributions_set($rewardbook->container_guid, $rewardbook->contributor);
@@ -33,21 +34,20 @@ if ($contributions_set_guid = $contributions_set->save()) {
 	
 	$transaction->contributor = $rewardbook->contributor;
 	$transaction->commit_date = $rewardbook->time_created;
-    $transaction->save();
+    	$transaction->save();
 
-    $contributions_set->eur_amount += $amount;
-    $container->eur_amount += $amount;
-	remove_entity_relationships($rewardbook_guid, "reward");		
- 
+    	$contributions_set->eur_amount += $rewardbook->amount;
+    	$entity->eur_amount += $rewardbook->amount;
+	
+	remove_entity_relationships($rewardbook_guid, "reward");		 
 	add_entity_relationship ($transaction->guid, 'reward', $reward_guid);
 
-	$params = array('transaction_guid' => $transaction->guid, 'reward_guid' => $reward_guid);		
-
+	$params = array('transaction_guid' => $transaction->guid, 'reward_guid' => $reward_guid);	
 	elgg_trigger_plugin_hook('fundraising:rewards:save', 'campaign_reward', $params);	
 
 	$rewardbook->delete();	
 
-    system_message(elgg_echo('campaign_reward:reward_book:success'));	
+    	system_message(elgg_echo('campaign_reward:reward_book:success'));	
 
 } else {
 	register_error(elgg_echo('campaign_reward:reward_book:error'));	

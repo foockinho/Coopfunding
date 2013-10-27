@@ -221,21 +221,13 @@ function campaign_reward_get_reward_or_transaction ($guid) {
 **/
 function campaign_reward_get_reward_book ($book_search_code) {
 
-	$books = elgg_get_entities_from_metadata (array (
+	return current(elgg_get_entities_from_metadata (array (
 		'type' => 'object',
 		'subtype' => 'reward_book',
 		'metadataname' => 'search_code',
-		'metadatavalue' => $book_search_code
-		));
-
-	if ($books) {
-		if (sizeof($books) != 1) {
-			return null; //TODO must validate with user and container_guid to find the book,
-		} else {
-			return $books[0];
-		}
-	}
-	return null;
+		'metadatavalue' => $book_search_code,
+		'limit' =>1
+		)));
 }
 
 

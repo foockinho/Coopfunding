@@ -175,7 +175,7 @@ creates a relationship between $params['reward_guid'] and $params['transaction_g
 
 $params['transaction_guid']
 $params['book_search_code'] some code stored by pay method in booking to find book entity.
-$params['referer_if out stock']    if yes, goes back to referer if stocked. else, inform but pass.
+$params['referer_if_out_stock']    if yes, goes back to referer if stocked. else, inform but pass.
 
 */
 function campaign_reward_save ($hook, $type, $returnvalue, $params){
@@ -209,10 +209,10 @@ function campaign_reward_save ($hook, $type, $returnvalue, $params){
 			if ($is_stocked) {		
 				$relation = add_entity_relationship ($params['transaction_guid'], 'reward', $reward_guid);			
 			} else {
-				if ($params['referer_if out stock']) {
-					register_error(elgg_echo('campaign_reward:reward:nostocked'));	
+				if ($params['referer_if_out_stock']){					
+					forward(REFERER);
 				}
-				forward(REFERER);
+				register_error(elgg_echo('campaign_reward:reward:nostocked'));				
 			}		
 		}
 	}

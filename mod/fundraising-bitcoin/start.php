@@ -12,11 +12,12 @@ function fundraising_bitcoin_init() {
 	elgg_register_library('coopfunding:fundraising:bitcoin', elgg_get_plugins_path() . 'fundraising-bitcoin/lib/fundraising-bitcoin.php');
 	elgg_register_library('coopfunding:fundraising:bitcoin:addrgen', elgg_get_plugins_path() . 'fundraising-bitcoin/lib/fundraising-bitcoin-addrgen.php');
 	elgg_register_action('fundraising/bitcoin-callback', dirname(__FILE__) . '/actions/bitcoin-callback.php', "public");
+	elgg_register_action('fundraising/bitcoin-address', dirname(__FILE__) . '/actions/bitcoin-address.php', "public");	
 	elgg_register_plugin_hook_handler('fundraising', 'sum_amount', 'fundraising_bitcoin_sum_amount');
 
-    elgg_register_library('coopfunding:fundraising', elgg_get_plugins_path() . 'fundraising/lib/fundraising.php');
-    fundraising_register_method('bitcoin');
-    fundraising_register_currency('btc');
+   	elgg_load_library('coopfunding:fundraising');
+   	fundraising_register_method('bitcoin');
+    	fundraising_register_currency('btc');
 
 	elgg_register_plugin_hook_handler('cron', 'hourly', 'fundraising_bitcoin_cron');
 }
@@ -24,59 +25,31 @@ function fundraising_bitcoin_init() {
 function fundraising_bitcoin_page_handler($page) {
 
 	if (isset($page[1]) && $page[1] == 'contribute') {
-	    
-	   if (isset($page[2])) {
-	        
-	        $entity = get_entity($page[2]);    
-	    
-	        if($entity) {
-    	        if (elgg_instanceof($entity, 'group', 'project')) {
-                    $entity_text = 'project';
-                    $entities_text = 'projects';
-                }else{
-                    $entity_text = 'fundcampaigns';
-                    $entities_text = 'fundcampaigns';
-                }
-    		    elgg_load_library("elgg:{$entities_text}");
-    		    
-    			elgg_set_page_owner_guid($entity->guid);
-
-				elgg_load_library('coopfunding:fundraising:bitcoin');
-				$address = fundraising_bitcoin_get_address($entity->guid);
-			
+		if (isset($page[2])){
+			$entity = get_entity($page[2]);    	    
+			if($entity) {	    	      		    					    
+	    			elgg_set_page_owner_guid($entity->guid);			
+		
 				if (elgg_is_active_plugin("campaign_reward") && get_input('reward_guid') && $entity->getSubtype = 'fundcampaign' ) {	
-						$params = array(
-							'user_guid' => elgg_get_logged_in_user_guid(),
-							'fundcampaign_guid' => $entity->guid, 
-							'reward_guid' => get_input('reward_guid'),
-							'amount' => get_input('amount'),
-							'method' => 'bitcoin',
-							'book_search_code' => $address
-						);			
-						$books_text = elgg_trigger_plugin_hook('fundraising:transaction:do_books', 'do_books', $params);	
-				}
-    
-    			elgg_push_breadcrumb(elgg_echo("{$entities_text}"), "{$entities_text}/all");
-    			elgg_push_breadcrumb($entity->name, $entity->getURL());
-    			elgg_push_breadcrumb(elgg_echo('fundraising:contribute'));
-    
-    			$title = elgg_echo('fundraising:bitcoin:title', array($entity->name));
-    			$content = elgg_view('fundraising/bitcoin/contribute', array(
-    				'entity' => $entity,
-    				'amount' => get_input('amount'),
-					'address' => $address,
-    			));
-    			$body = elgg_view_layout('content', array(
-    				'title' => $title,
-    				'content' => $content,
-    				'filter' => '',
-    			));
-    			echo elgg_view_page($title, $body);
-    			return true;
-	        }
+					$params = array(
+						'user_guid' => elgg_get_logged_in_user_guid(),
+						'fundcampaign_guid' => $entity->guid, 
+						'reward_guid' => get_input('reward_guid'),
+						'amount' => get_input('amount'),
+						'method' => 'bitcoin',
+						'book_search_code' => $address
+					);			
+					$books_text = elgg_trigger_plugin_hook('fundraising:transaction:do_books', 'do_books', $params);	
+				}    	    			
+				forward($entity->getURL());
+	    			return true;
+			}
 		}
 	} elseif (isset($page[1]) && $page[1] == 'bitcoin-callback') {
 		include(elgg_get_plugins_path() . 'fundraising-bitcoin/actions/bitcoin-callback.php');
+		return true;
+	}elseif (isset($page[1]) && $page[1] == 'bitcoin-address') {		
+		include(elgg_get_plugins_path() . 'fundraising-bitcoin/actions/bitcoin-address.php');
 		return true;
 	}
 

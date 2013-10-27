@@ -5,17 +5,17 @@
  * @package transaction
  */
 
- 
+
 $transaction = get_entity($vars['guid']);
 $vars['entity'] = $transaction;
 
 $amount = $vars['eur_amount'];
 
+//Action buttons
 $action_buttons = '';
 $delete_link = '';
 
 if ($vars['guid']) {
-	// add a delete button if editing
 	$delete_url = "action/fundraising/bankaccount/delete?guid={$vars['guid']}";
 	$delete_link = elgg_view('output/confirmlink', array(
 		'href' => $delete_url,
@@ -23,6 +23,7 @@ if ($vars['guid']) {
 		'class' => 'elgg-button elgg-button-delete float-alt'
 	));
 }
+
 $save_url = "action/transaction/delete?guid={$vars['guid']}";
 $save_button = elgg_view('input/submit', array(
     'href' => $save_url,
@@ -42,12 +43,9 @@ $defaultvalues['name'] = 'contributor';
 $contributor_text = elgg_view('input/userpicker', $defaultvalues);
 
 
-if (!$vars['commit_date']) { 
+if (!$vars['commit_date']) {
     $vars['commit_date'] = new DateTime();
-    
     $vars['commit_date'] = $vars['commit_date']->format('Y-m-d H:i:s');
-} else {
- 
 }
 $date_label = elgg_echo('fundraising:date');
 $date_input = elgg_view('input/date', array(
@@ -55,7 +53,7 @@ $date_input = elgg_view('input/date', array(
 	'id' => 'commit_date',
 	'value' => $vars['commit_date']
 ));
- 
+
 $amount_label = elgg_echo('fundraising:amount');
 $amount_input = elgg_view('input/text', array(
 	'name' => 'eur_amount',
@@ -63,12 +61,10 @@ $amount_input = elgg_view('input/text', array(
 	'value' => _elgg_html_decode($vars['eur_amount'])
 ));
 
-if (elgg_is_active_plugin("campaign_reward")) {		
-	
-		$params = array('fundcampaign_guid' => $vars['container_guid'], 'transaction_guid' => $vars['guid']);		
-		$campaign_reward_text = elgg_trigger_plugin_hook('fundraising:rewards:selector', 'campaign_reward', $params);	
+if (elgg_is_active_plugin("campaign_reward")) {
+	$params = array('fundcampaign_guid' => $vars['container_guid'], 'transaction_guid' => $vars['guid']);		
+	$campaign_reward_text = elgg_trigger_plugin_hook('fundraising:rewards:selector', 'campaign_reward', $params);	
 }
-
 
 if ($vars['guid']) {
 	$entity = get_entity($vars['guid']);
@@ -80,8 +76,8 @@ if ($vars['guid']) {
 // hidden inputs
 $container_guid_input = elgg_view('input/hidden', array('name' => 'container_guid', 'value' => $vars['container_guid']));
 $guid_input = elgg_view('input/hidden', array('name' => 'guid', 'value' => $vars['guid']));
+
 //$contributor_text
- 
 echo <<<___HTML
 
 <div>
