@@ -9,7 +9,7 @@ $language = array(
 	* Menu items and titles
 	*/
 
-    'fundraising' => "Contributions",
+	'fundraising' => "Contributions",
 	'fundraising:contribute' => "Contribute",
 	'fundraising:contribute:desc' => "Voluntary contribution to %s",
 
