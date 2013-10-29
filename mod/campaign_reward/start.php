@@ -50,7 +50,10 @@ function campaign_reward_init() {
 	}
 	if (elgg_is_active_plugin('fundcampaigns')) {
 	    elgg_register_library('coopfunding:fundcampaigns', elgg_get_plugins_path() . 'fundcampaigns/lib/fundcampaigns.php');
-	}
+	}	
+	
+	//Clean books not commited.
+	elgg_register_plugin_hook_handler('cron', 'daily', 'fundraising_books_cron');
 }
 
 /**
@@ -259,4 +262,43 @@ function campaign_reward_do_books ($hook, $type, $returnvalue, $params){
 	
 }
 
+function fundraising_books_cron ($hook, $entity_type, $returnvalue, $params) {
 
+	//Bankaccount, 10 days
+	$date = new DateTime();
+	$today = $date->getTimestamp();
+	$upper_timestamp = strtotime('-10 days', $today);	
+	
+	$init_date = new DateTime("2013-10-01");
+	$lower_timestamp = $init_date->getTimestamp();
+	$out_books = elgg_get_entities (array (
+			'type' => 'object',
+			'subtype' => 'reward_book',
+			'created_time_lower' => $lower_timestamp,
+			'created_time_upper' => $upper_timestamp
+		));
+
+	foreach ($out_books as $book) {
+		remove_entity_relationships($book->guid, "reward");
+		$book->delete();
+	}
+
+	//Bitcoin, 1 days
+	$date = new DateTime();
+	$today = $date->getTimestamp();
+	$upper_timestamp = strtotime('-1 days', $today);
+	
+	$init_date = new DateTime("2013-10-01");
+	$lower_timestamp = $init_date->getTimestamp();
+	$out_books = elgg_get_entities (array (
+			'type' => 'object',
+			'subtype' => 'reward_book',
+			'created_time_lower' => $lower_timestamp,
+			'created_time_upper' => $upper_timestamp			
+		));
+	foreach ($out_books as $book) {
+		remove_entity_relationships($book->guid, "reward");	
+		$book->delete();
+	}
+
+}
